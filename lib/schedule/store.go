@@ -3,83 +3,139 @@ package schedule
 import "fmt"
 
 type Store interface {
-	Find(id string) (*DeviceSchedule, error)
-	All() []*Device
-	SaveChanges(path string, s *DeviceSchedule) error
+	Find(id string) (*Schedule, error)
+	All() []*Schedule
+	SaveChanges(id string, s *Schedule) error
+	FindScheduleDeviceSettings(scheduleId, deviceId string) (*DeviceSetting, error)
+	SaveDeviceSettingChanges(scheduleId string, deviceId string, settings *DeviceSetting) error
 }
 
 type inMemoryStore struct {
-	devices []*Device
+	schedules []*Schedule
 }
 
-func (store *inMemoryStore) Find(id string) (*DeviceSchedule, error) {
-	var err error
-	for _, device := range store.devices {
-		for _, deviceSchedule := range device.Schedules {
-			if deviceSchedule.ID == id {
-				return deviceSchedule, err
-			}
-		}
-	}
-	err = fmt.Errorf("not found: %s", id)
-	return nil, err
-}
-
-func (store *inMemoryStore) All() []*Device {
-	return store.devices
-}
-
-func (store *inMemoryStore) SaveChanges(id string, s *DeviceSchedule) error {
+func (store *inMemoryStore) SaveDeviceSettingChanges(scheduleId string, deviceId string, settings *DeviceSetting) error {
 	found := false
-	for _, device := range store.devices {
-		for j, deviceSchedule := range device.Schedules {
-			if deviceSchedule.ID == id {
+	for _, schedule := range store.schedules {
+		if schedule.ID == scheduleId {
+			for i, s := range schedule.DeviceSettings {
+				if s.Device.ID == deviceId {
+					schedule.DeviceSettings[i] = settings
+				}
 				found = true
-				device.Schedules[j] = s
-				// check to see if this would merge the schedule, and offer that suggestion?
-				fmt.Printf("%#v", s)
 			}
 		}
 	}
 	if found {
-		fmt.Printf("updated devices\n%#v %#v\n", store.devices[0], store.devices[1])
+		fmt.Printf("updated schedules\n%#v\n", store.schedules)
+		return nil
+	}
+	return fmt.Errorf("did not find schedule with id: %s", scheduleId)
+}
+
+func (store *inMemoryStore) FindScheduleDeviceSettings(scheduleId, deviceId string) (*DeviceSetting, error) {
+	schedule, err := store.Find(scheduleId)
+	if err != nil {
+		return nil, err
+	}
+	for _, setting := range schedule.DeviceSettings {
+		if setting.Device.ID == deviceId {
+			return setting, nil
+		}
+	}
+	return nil, fmt.Errorf("no device found for %s in schedule %s", deviceId, scheduleId)
+}
+
+func (store *inMemoryStore) Find(id string) (*Schedule, error) {
+	var err error
+	for _, schedule := range store.schedules {
+		if schedule.ID == id {
+			return schedule, nil
+		}
+	}
+	err = fmt.Errorf("schedule not found: %s", id)
+	return nil, err
+}
+
+func (store *inMemoryStore) All() []*Schedule {
+	return store.schedules
+}
+
+func (store *inMemoryStore) SaveChanges(id string, s *Schedule) error {
+	found := false
+	for i, schedule := range store.schedules {
+		if schedule.ID == id {
+			found = true
+			store.schedules[i] = s
+		}
+	}
+	if found {
+		fmt.Printf("updated schedules\n%#v\n", store.schedules)
 		return nil
 	}
 	return fmt.Errorf("did not find schedule with id: %s", id)
 }
 
 func NewStore() Store {
+	nightstand := &Device{
+		FriendlyName: "Bedroom Nightstand",
+		ID:           "3265D1FD-4FE5-4662-8AFE-C966089BCCB9",
+	}
+	playroomLight := &Device{
+		FriendlyName: "Playroom Light",
+		ID:           "3265D1FD-4FE5-4662-8AFE-C966089BCCB9",
+	}
+	deskLamp1 := &Device{
+		FriendlyName: "Work Desk Lamp",
+		ID:           "3265D1FD-4FE5-4662-8AFE-C966089BCCA9",
+	}
+	deskLamp2 := &Device{
+		FriendlyName: "Family Desk Lamp",
+		ID:           "3265D1FD-4FE5-4662-8AFE-C966089BCCB9",
+	}
 	return &inMemoryStore{
-		devices: []*Device{
+		schedules: []*Schedule{
 			{
-				FriendlyName: "Bedroom",
+				FriendlyName: "Left the Light On",
 				ID:           "E0D5118D-1554-4394-93A8-EFC6C7276D0A",
-				Schedules: []*DeviceSchedule{
+				OnTime:       8 * Hour,
+				OffTime:      5*Hour + PM,
+				DeviceSettings: []*DeviceSetting{
 					{
-						ID:         "3265D1FD-4FE5-4662-8AFE-C966089BCCB9",
-						OnTime:     8 * Hour,
-						OffTime:    5*Hour + PM,
-						Color:      "#33b73c",
+						Device:     nightstand,
 						Brightness: 100,
-					},
-					{
-						ID:         "3265D1FD-4FE5-4662-8AFE-C966089BCCB0",
-						OnTime:     8*Hour + PM,
-						OffTime:    10*Hour + 30*Minute + PM,
-						Color:      "#f60080",
-						Brightness: 75,
+						Color:      "#33b73c",
 					},
 				},
 			}, {
-				FriendlyName: "Kitchen",
+				FriendlyName: "Cooking",
 				ID:           "31CD5DBD-E5F9-43FE-A6D3-FB7D5E07E57F",
-				Schedules: []*DeviceSchedule{
+				OnTime:       12 * Hour,
+				OffTime:      9*Hour + PM,
+				DeviceSettings: []*DeviceSetting{
 					{
-						ID:         "271FA53F-7CB8-4624-A164-5203BCCBB4FA",
-						OnTime:     12 * Hour,
-						OffTime:    9*Hour + PM,
-						Color:      "#f6b73c",
-						Brightness: 60,
+						Device:     playroomLight,
+						Brightness: 100,
+						Color:      "#33b73c",
+					},
+				},
+			},
+			{
+				ID:           "3265D1FD-4FE5-4662-8AFE-C966089BCCB0",
+				FriendlyName: "Evening Puttering",
+				OnTime:       8*Hour + PM,
+				OffTime:      10*Hour + 30*Minute + PM,
+
+				DeviceSettings: []*DeviceSetting{
+					{
+						Device:     deskLamp1,
+						Brightness: 75,
+						Color:      "#33b73c",
+					},
+					{
+						Device:     deskLamp2,
+						Brightness: 75,
+						Color:      "#f60080",
 					},
 				},
 			},

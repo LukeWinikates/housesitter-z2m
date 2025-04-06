@@ -17,7 +17,7 @@ type SchedulePUTRequestBody struct {
 	Color      string `json:"color"`
 }
 
-func (body SchedulePUTRequestBody) Apply(sched *schedule.DeviceSchedule) error {
+func (body SchedulePUTRequestBody) Apply(sched *schedule.Schedule) error {
 	ontime, err := htmlTimeToSecondsInDay(body.OnTime)
 	if err != nil {
 		return err
@@ -28,16 +28,10 @@ func (body SchedulePUTRequestBody) Apply(sched *schedule.DeviceSchedule) error {
 		return err
 	}
 	sched.OffTime = offtime
-
-	sched.Color = body.Color
-	brightness, err := strconv.Atoi(body.Brightness)
-	if err != nil {
-		return fmt.Errorf("invalid brightness: %s", body.Brightness)
-	}
-
-	sched.Brightness = uint8(brightness)
 	return nil
 }
+
+// schedule device setting put
 
 // eg 22:15
 func htmlTimeToSecondsInDay(time string) (schedule.SecondsInDay, error) {

@@ -10,8 +10,8 @@ import (
 func indexPage(store schedule.Store) func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html")
-		deviceList := store.All()
-		viewModel := index.Grid(deviceList)
+		scheduleList := store.All()
+		viewModel := index.Grid(scheduleList)
 		err := homepageTemplate.Execute(writer, viewModel)
 		if err != nil {
 			writer.WriteHeader(500)

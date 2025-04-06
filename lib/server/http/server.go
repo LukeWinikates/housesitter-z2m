@@ -13,6 +13,7 @@ import (
 //const ROUTES
 
 const PUT_SCHEDULES_ROUTE_PATTERN = "PUT /api/schedules/{schedule_id}"
+const PUT_DEVICE_SETTINGS_ROUTE_PATTERN = "PUT /api/schedules/{schedule_id}/device_settings/{device_id}"
 
 var homepageTemplate *template.Template
 
@@ -44,6 +45,7 @@ func (s *realServer) Serve(addr string) error {
 	scheduleStore := schedule.NewStore()
 	mux.HandleFunc("/", indexPage(scheduleStore))
 	mux.HandleFunc(PUT_SCHEDULES_ROUTE_PATTERN, api.SchedulePutHandler(scheduleStore))
+	mux.HandleFunc(PUT_DEVICE_SETTINGS_ROUTE_PATTERN, api.ScheduleDevicePutHandler(scheduleStore))
 	server := &http.Server{Addr: addr, Handler: mux}
 	s.server = server
 	return server.ListenAndServe()

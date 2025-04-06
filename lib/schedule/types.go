@@ -7,17 +7,22 @@ import (
 
 type HexColor = string
 
-type DeviceSchedule struct {
-	OnTime     SecondsInDay
-	OffTime    SecondsInDay
+type Schedule struct {
+	OnTime         SecondsInDay
+	OffTime        SecondsInDay
+	DeviceSettings []*DeviceSetting
+	FriendlyName   string
+	ID             string
+}
+
+type DeviceSetting struct {
+	Device     *Device
 	Brightness uint8
-	ID         string
 	Color      HexColor
 }
 
 type Device struct {
 	FriendlyName string
-	Schedules    []*DeviceSchedule
 	ID           string
 }
 

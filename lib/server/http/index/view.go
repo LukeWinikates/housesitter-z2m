@@ -6,31 +6,29 @@ import (
 	"html/template"
 )
 
-type Schedule struct {
-	OnTime     schedule.SecondsInDay
-	OffTime    schedule.SecondsInDay
-	Row        int
-	ID         string
-	Brightness uint8
-	Color      string
+type GridSchedule struct {
+	OnTime       schedule.SecondsInDay
+	OffTime      schedule.SecondsInDay
+	FriendlyName string
+	Devices      []GridDeviceSettings
+	Row          int
+	ID           string
 }
 
-type GridDevice struct {
+type GridDeviceSettings struct {
 	RowNumber      int
 	DisplayClasses string
-	Schedules      []Schedule
 	FriendlyName   string
+	ID             string
+	Brightness     uint8
+	Color          string
 }
 
-func (gd GridDevice) InlineStyles() template.HTMLAttr {
-	return template.HTMLAttr(fmt.Sprintf("style=\"grid-row-start: %v; grid-column-start:1 ; grid-column-end: 1\"", gd.RowNumber+1))
-}
-
-func (s Schedule) Title() string {
+func (s GridSchedule) FormattedTime() string {
 	return fmt.Sprintf("%s - %s", s.OnTime.HumanReadable(), s.OffTime.HumanReadable())
 }
 
-func (s Schedule) InlineStyles() template.HTMLAttr {
+func (s GridSchedule) InlineStyles() template.HTMLAttr {
 	onTime := s.OnTime   // time in seconds
 	offTime := s.OffTime // time in seconds
 	// to column means -> 86400 second, divided by grid size 48
@@ -48,21 +46,12 @@ type Legend struct {
 }
 
 type ViewGrid struct {
-	Devices     []GridDevice
+	Schedules   []GridSchedule
 	Legends     []Legend
 	GridClasses string
 }
 
-func Grid(list []*schedule.Device) ViewGrid {
-	gridDevices := make([]GridDevice, len(list))
-	for i, device := range list {
-		schedules := displaySchedules(device.Schedules, i+1)
-		gridDevices[i] = GridDevice{
-			RowNumber:    i + 1,
-			Schedules:    schedules,
-			FriendlyName: device.FriendlyName,
-		}
-	}
+func Grid(list []*schedule.Schedule) ViewGrid {
 
 	var legends = make([]Legend, 48)
 
@@ -82,22 +71,36 @@ func Grid(list []*schedule.Device) ViewGrid {
 		}
 	}
 	return ViewGrid{
-		Devices:     gridDevices,
+		Schedules:   displaySchedules(list),
 		Legends:     legends,
 		GridClasses: "",
 	}
 }
 
-func displaySchedules(schedules []*schedule.DeviceSchedule, row int) []Schedule {
-	var result []Schedule
-	for _, deviceSchedule := range schedules {
-		result = append(result, Schedule{
-			ID:         deviceSchedule.ID,
-			OnTime:     deviceSchedule.OnTime,
-			OffTime:    deviceSchedule.OffTime,
-			Brightness: deviceSchedule.Brightness,
-			Row:        row,
-			Color:      deviceSchedule.Color,
+func displayDevices(devices []*schedule.DeviceSetting) []GridDeviceSettings {
+	gridDevices := make([]GridDeviceSettings, len(devices))
+	for i, device := range devices {
+		gridDevices[i] = GridDeviceSettings{
+			RowNumber:    i + 1,
+			FriendlyName: device.Device.FriendlyName,
+			ID:           device.Device.ID,
+			Brightness:   device.Brightness,
+			Color:        device.Color,
+		}
+	}
+	return gridDevices
+}
+
+func displaySchedules(schedules []*schedule.Schedule) []GridSchedule {
+	var result []GridSchedule
+	for i, s := range schedules {
+		result = append(result, GridSchedule{
+			ID:           s.ID,
+			OnTime:       s.OnTime,
+			OffTime:      s.OffTime,
+			FriendlyName: s.FriendlyName,
+			Row:          i + 1,
+			Devices:      displayDevices(s.DeviceSettings),
 		})
 	}
 	return result

@@ -5,7 +5,7 @@ body {
   background-color: darkslateblue;
 }
 
-header {
+body > header {
   background-color: bisque;
   padding: 18px;
   border-bottom: 1px solid black;
@@ -24,13 +24,13 @@ header h1 {
 .card {
   background-color: bisque;
   padding: 4px;
-  margin: 4px;
+  margin: 18px;
 }
 
 .schedule-box {
   border: 1px solid black;
   display: grid;
-  grid-template-columns: [labels] 72px repeat(48, [tick] 1fr);
+  grid-template-columns: [labels] auto repeat(48, [tick] 1fr);
   grid-template-rows: 24px;
   grid-gap: 2px;
 }
@@ -45,6 +45,10 @@ header h1 {
   background-color: mediumslateblue;
 }
 
+.form-oneline {
+  display: flex;
+  align-content: baseline;
+}
 
 .chamfer {
   clip-path: polygon(
@@ -56,6 +60,17 @@ header h1 {
     5px 100%,
     0% calc(100% - 5px),
     0% 5px);
+}
+
+.flex {
+  display: flex;
+}
+
+.label-fullwidth {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0;
+  width: 100%;
 }
 
 .schedule {

@@ -41,7 +41,7 @@ func createServerOptions() server.Options {
 	dataPath := os.Getenv("DATA_PATH")
 	hostname := os.Getenv("HOUSESITTER_HOST")
 	if hostname == "" {
-		hostname = ":8998"
+		hostname = "localhost:8998"
 	}
 	options := server.Options{
 		DataDir:  dataPath,

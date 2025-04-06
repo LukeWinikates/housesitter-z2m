@@ -26,6 +26,22 @@
           // reload?
         })
       }
+
+      function updateScheduleDeviceSettings(form, event) {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const newScheduleValues = Object.fromEntries(formData)
+        newScheduleValues.brightness = parseInt(newScheduleValues.brightness)
+        const url = `/api/schedules/${newScheduleValues["schedule-id"]}/device_settings/${newScheduleValues.id}`
+
+        fetch(url, {
+          method: "PUT",
+          body: JSON.stringify(newScheduleValues)
+        }).then(() => {
+          // location.reload()
+          // reload?
+        })
+      }
     </script>
 </head>
 <body>
@@ -43,34 +59,47 @@
     <option value="75"></option>
     <option value="100">100</option>
 </datalist>
-<section id="schedule-grid">
+<section id="schedule-grid" class="chamfer">
     <article class="schedule-box">
         {{ range .Legends }}
             <div class="{{.DisplayClasses }}" {{.Style}}>
                 {{ .Title }}
             </div>
         {{ end }}
-        {{ range .Devices }}
-            <div class="label chamfer"
+        {{ range .Schedules }}
+            <div style="grid-row-start:calc({{.Row }} + 1)">
+                <div>{{.FriendlyName}}</div>
+                <div>
+                    {{range .Devices}}
+                        <span title="{{.FriendlyName}}"
+                                style="display: inline-block; height: 5px; width: 5px; padding: 5px; background-color: {{.Color}}">
+
+                        </span>
+                    {{end}}
+                </div>
+            </div>
+            {{/*            TODO: little icons for light colors*/}}
+            <div class="label chamfer" onclick="openpanel({{.ID}})"
                     {{ .InlineStyles }}
             >
-                {{ .FriendlyName }}
+                {{ .FormattedTime }}
             </div>
-            {{ range .Schedules}}
-                <div {{.InlineStyles }} class="schedule chamfer" onclick="openpanel({{.ID}})">
-                    {{ .Title }}
-                </div>
-            {{ end }}
         {{ end }}
     </article>
 </section>
 <article id="panel" class="hidden">
-    {{ range .Devices }}
-        {{ $name := .FriendlyName }}
-        {{ range .Schedules}}
-            <article id="schedule-{{.ID}}" class="card">
-                <h3>{{ $name }}</h3>
-                <form onsubmit="updateSchedule(this, event)">
+    {{ range .Schedules }}
+        {{ $scheduleID := .ID }}
+        <section class="card" id="schedule-{{.ID}}">
+            <header>
+                <sub>schedule</sub>
+                <h2>{{.FriendlyName}}</h2>
+                <aside>
+                    {{ .Devices | len }} devices
+                </aside>
+            </header>
+            <article>
+                <form class="form-oneline" onsubmit="updateSchedule(this, event)">
                     <input type="hidden" name="id" value="{{.ID}}">
                     <label>On Time
                         <input type="time" name="ontime" step="60" value="{{.OnTime.HTMLValue}}">
@@ -78,17 +107,43 @@
                     <label>Off Time
                         <input type="time" step="60" name="offtime" value="{{.OffTime.HTMLValue}}">
                     </label>
-                    <label>Brightness
-                        <input type="range" min="0" max="100" value="{{.Brightness}}" list="markers"/>
-                    </label>
-                    <label>
-                        Color
-                        <input type="color" name="color" value="{{.Color}}"/>
-                    </label>
                     <button type="submit">Update</button>
                 </form>
+                <section>
+                    <header>
+                        Devices on this Schedule
+                    </header>
+                    <article class="flex">
+                        {{ range .Devices}}
+                            <section id="schedule-{{$scheduleID}}-device-{{.ID}}" class="chamfer card">
+                                <header>
+                                    <h3>{{.FriendlyName}}</h3>
+                                </header>
+                                <article>
+                                    <form style="display: flex; flex-direction: column; align-items: flex-end"
+                                          onsubmit="updateScheduleDeviceSettings(this, event)">
+                                        <input type="hidden" name="schedule-id" value="{{$scheduleID}}">
+                                        <input type="hidden" name="id" value="{{.ID}}">
+                                        <label class="label-fullwidth">
+                                            <span>Brightness</span>
+                                            <input type="range" min="0" max="100" style="width:55%;"
+                                                   name="brightness"
+                                                   value="{{.Brightness}}"
+                                                   list="markers"/>
+                                        </label>
+                                        <label class="label-fullwidth">
+                                            Color
+                                            <input type="color" name="color" value="{{.Color}}"/>
+                                        </label>
+                                        <button style="width: 50%" type="submit">Update</button>
+                                    </form>
+                                </article>
+                            </section>
+                        {{ end }}
+                    </article>
+                </section>
             </article>
-        {{ end }}
+        </section>
     {{ end }}
 </article>
 </body>
