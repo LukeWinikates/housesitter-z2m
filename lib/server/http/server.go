@@ -3,6 +3,7 @@ package http
 import (
 	"LukeWinikates/january-twenty-five/lib/schedule"
 	"LukeWinikates/january-twenty-five/lib/server/http/api"
+	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
 	"context"
 	"html/template"
 	"net/http"
@@ -13,7 +14,9 @@ import (
 //const ROUTES
 
 const PUT_SCHEDULES_ROUTE_PATTERN = "PUT /api/schedules/{schedule_id}"
+const POST_SCHEDULES_ROUTE_PATTERN = "POST /api/schedules/"
 const PUT_DEVICE_SETTINGS_ROUTE_PATTERN = "PUT /api/schedules/{schedule_id}/device_settings/{device_id}"
+const POST_DEVICE_SETTINGS_ROUTE_PATTERN = "POST /api/schedules/{schedule_id}/device_settings"
 
 var homepageTemplate *template.Template
 
@@ -44,8 +47,10 @@ func (s *realServer) Serve(addr string) error {
 	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.FS(fs))))
 	scheduleStore := schedule.NewStore()
 	mux.HandleFunc("/", indexPage(scheduleStore))
-	mux.HandleFunc(PUT_SCHEDULES_ROUTE_PATTERN, api.SchedulePutHandler(scheduleStore))
-	mux.HandleFunc(PUT_DEVICE_SETTINGS_ROUTE_PATTERN, api.ScheduleDevicePutHandler(scheduleStore))
+	mux.HandleFunc(PUT_SCHEDULES_ROUTE_PATTERN, api.SchedulePUTHandler(scheduleStore))
+	mux.HandleFunc(POST_SCHEDULES_ROUTE_PATTERN, api.SchedulePOSTHandler(scheduleStore))
+	mux.HandleFunc(PUT_DEVICE_SETTINGS_ROUTE_PATTERN, api.ScheduleDevicePUTHandler(scheduleStore))
+	mux.HandleFunc(POST_DEVICE_SETTINGS_ROUTE_PATTERN, api.ScheduleDevicePOSTHandler(scheduleStore, zigbee2mqtt.NewInMemoryStore()))
 	server := &http.Server{Addr: addr, Handler: mux}
 	s.server = server
 	return server.ListenAndServe()

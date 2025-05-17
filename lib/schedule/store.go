@@ -1,6 +1,9 @@
 package schedule
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/google/uuid"
+)
 
 type Store interface {
 	Find(id string) (*Schedule, error)
@@ -8,10 +11,27 @@ type Store interface {
 	SaveChanges(id string, s *Schedule) error
 	FindScheduleDeviceSettings(scheduleId, deviceId string) (*DeviceSetting, error)
 	SaveDeviceSettingChanges(scheduleId string, deviceId string, settings *DeviceSetting) error
+	Add(schedule *Schedule) error
+	AddDeviceSettings(scheduleID string, settings *DeviceSetting) error
 }
 
 type inMemoryStore struct {
 	schedules []*Schedule
+}
+
+func (store *inMemoryStore) Add(schedule *Schedule) error {
+	schedule.ID = uuid.New().String()
+	store.schedules = append(store.schedules, schedule)
+	return nil
+}
+
+func (store *inMemoryStore) AddDeviceSettings(scheduleID string, settings *DeviceSetting) error {
+	s, err := store.Find(scheduleID)
+	if err != nil {
+		return err
+	}
+	s.DeviceSettings = append(s.DeviceSettings, settings)
+	return nil
 }
 
 func (store *inMemoryStore) SaveDeviceSettingChanges(scheduleId string, deviceId string, settings *DeviceSetting) error {

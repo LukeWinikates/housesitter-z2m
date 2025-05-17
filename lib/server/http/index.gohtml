@@ -27,6 +27,21 @@
         })
       }
 
+      function createSchedule(form, event) {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const newScheduleValues = Object.fromEntries(formData)
+        const url = `/api/schedules/`
+
+        fetch(url, {
+          method: "POST",
+          body: JSON.stringify(newScheduleValues)
+        }).then(() => {
+          // location.reload()
+          // reload?
+        })
+      }
+
       function updateScheduleDeviceSettings(form, event) {
         event.preventDefault();
         const formData = new FormData(form);
@@ -78,13 +93,15 @@
                     {{end}}
                 </div>
             </div>
-            {{/*            TODO: little icons for light colors*/}}
             <div class="label chamfer" onclick="openpanel({{.ID}})"
                     {{ .InlineStyles }}
             >
                 {{ .FormattedTime }}
             </div>
         {{ end }}
+        <div style="grid-row-start:calc({{ .Schedules | len }} + 2)">
+            <button>Create New Schedule</button>
+        </div>
     </article>
 </section>
 <article id="panel" class="hidden">
@@ -145,6 +162,25 @@
             </article>
         </section>
     {{ end }}
+    <section class="card" id="schedule-new">
+        <header>
+            <sub>schedule</sub>
+        </header>
+        <article>
+            <form class="form-oneline" onsubmit="createSchedule(this, event)">
+                <h2><input type="text" name="name"></h2>
+                <label>On Time
+                    <input type="time" name="ontime" step="60" value="09:00">
+                </label>
+                <label>Off Time
+                    <input type="time" step="60" name="offtime" value="14:00">
+                </label>
+                <button type="submit">Create</button>
+            </form>
+            <section>
+            </section>
+        </article>
+    </section>
 </article>
 </body>
 </html>
