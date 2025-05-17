@@ -1,108 +1,124 @@
 body {
-  font-size: 18px;
-  font-family: system-ui;
-  margin: 0;
-  background-color: darkslateblue;
+    font-size: 18px;
+    font-family: system-ui;
+    margin: 0;
+    background-color: darkslateblue;
 }
 
 body > header {
-  background-color: bisque;
-  padding: 18px;
-  border-bottom: 1px solid black;
+    background-color: bisque;
+    padding: 18px;
+    border-bottom: 1px solid black;
 }
 
 header h1 {
-  margin: 0;
+    margin: 0;
 }
 
 #schedule-grid {
-  background-color: bisque;
-  padding: 4px;
-  margin: 18px;
+    background-color: bisque;
+    padding: 4px;
+    margin: 18px;
 }
 
 .card {
-  background-color: bisque;
-  padding: 4px;
-  margin: 18px;
+    background-color: bisque;
+    padding: 4px;
+    margin: 18px;
 }
 
 .schedule-box {
-  border: 1px solid black;
-  display: grid;
-  grid-template-columns: [labels] auto repeat(48, [tick] 1fr);
-  grid-template-rows: 24px;
-  grid-gap: 2px;
+    border: 1px solid black;
+    display: grid;
+    grid-template-columns: [labels] auto repeat(48, [tick] 1fr);
+    grid-template-rows: 24px;
+    grid-gap: 2px;
 }
 
 
 .label {
-  background-color: mediumslateblue;
-  text-align: center;
+    background-color: mediumslateblue;
+    text-align: center;
+    align-content: center;
+}
+
+.label:hover {
+    background-color: lightcoral;
 }
 
 .line {
-  background-color: mediumslateblue;
+    background-color: mediumslateblue;
 }
 
 .form-oneline {
-  display: flex;
-  align-content: baseline;
+    display: flex;
+    align-content: baseline;
 }
 
 .chamfer {
-  clip-path: polygon(
-    5px 0%,
-    calc(100% - 5px) 0%,
-    100% 5px,
-    100% calc(100% - 5px),
-    calc(100% - 5px) 100%,
-    5px 100%,
-    0% calc(100% - 5px),
-    0% 5px);
+    clip-path: polygon(
+            5px 0%,
+            calc(100% - 5px) 0%,
+            100% 5px,
+            100% calc(100% - 5px),
+            calc(100% - 5px) 100%,
+            5px 100%,
+            0% calc(100% - 5px),
+            0% 5px);
 }
 
 .flex {
-  display: flex;
+    display: flex;
 }
 
 .label-fullwidth {
-  display: flex;
-  justify-content: space-between;
-  margin: 5px 0;
-  width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    width: 100%;
 }
 
 .schedule {
-  background-color: mediumslateblue;
-  text-align: center;
+    background-color: mediumslateblue;
+    text-align: center;
 }
 
 .header {
-  grid-row-start: 1;
-  grid-column-end: 48;
-  height: 20px;
+    grid-row-start: 1;
+    grid-column-end: 48;
+    height: 20px;
 }
 
 .header span {
-  height: 100%;
-  border: 1px solid black;
+    height: 100%;
+    border: 1px solid black;
 }
 
 .legend {
-  text-align: center;
+    text-align: center;
 }
 
 #panel {
-  border: 1px darkslateblue;
-  transition: height .3s ease-out;
-  overflow: hidden;
+    border: 1px darkslateblue;
+    transition: height .3s ease-out;
+    overflow: hidden;
 }
 
 #panel.hidden {
-  height: 0;
+    height: 0;
 }
 
 label {
-  display: block;
+    display: block;
+}
+
+button {
+    background-color: mediumslateblue;
+    padding: 10px;
+    margin: 5px;
+    border: 0;
+}
+
+button:hover {
+    background-color: lightcoral;
 }

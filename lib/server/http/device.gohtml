@@ -1,0 +1,25 @@
+{{define "device"}}
+    <header>
+        <h3>{{.FriendlyName}}</h3>
+    </header>
+    <article>
+        <div style="display: flex; flex-direction: column; align-items: flex-end">
+            <label>
+                <span>add to schedule</span>
+            <input name="device[{{.ID}}][include]" type="checkbox" value="true">
+            </label>
+            <input type="hidden" name="device[{{.ID}}][id]" value="{{.ID}}">
+            <label class="label-fullwidth">
+                <span>Brightness</span>
+                <input type="range" min="0" max="100" style="width:55%;"
+                       name="device[{{.ID}}][brightness]"
+                       value="{{.Brightness}}"
+                       list="markers"/>
+            </label>
+            <label class="label-fullwidth">
+                Color
+                <input type="color" name="device[{{.ID}}][color]" value="{{.Color}}"/>
+            </label>
+        </div>
+    </article>
+{{end}}

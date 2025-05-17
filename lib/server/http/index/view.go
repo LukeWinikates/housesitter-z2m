@@ -16,12 +16,12 @@ type GridSchedule struct {
 }
 
 type GridDeviceSettings struct {
-	RowNumber      int
-	DisplayClasses string
-	FriendlyName   string
-	ID             string
-	Brightness     uint8
-	Color          string
+	RowNumber int
+	//DisplayClasses string
+	FriendlyName string
+	ID           string
+	Brightness   uint8
+	Color        string
 }
 
 func (s GridSchedule) FormattedTime() string {
@@ -49,9 +49,10 @@ type ViewGrid struct {
 	Schedules   []GridSchedule
 	Legends     []Legend
 	GridClasses string
+	AllDevices  []GridDevice
 }
 
-func Grid(list []*schedule.Schedule) ViewGrid {
+func Grid(list []*schedule.Schedule, allDevices []*schedule.Device) ViewGrid {
 
 	var legends = make([]Legend, 48)
 
@@ -72,12 +73,13 @@ func Grid(list []*schedule.Schedule) ViewGrid {
 	}
 	return ViewGrid{
 		Schedules:   displaySchedules(list),
+		AllDevices:  toDeviceList(allDevices),
 		Legends:     legends,
 		GridClasses: "",
 	}
 }
 
-func displayDevices(devices []*schedule.DeviceSetting) []GridDeviceSettings {
+func toGridDeviceSettings(devices []*schedule.DeviceSetting) []GridDeviceSettings {
 	gridDevices := make([]GridDeviceSettings, len(devices))
 	for i, device := range devices {
 		gridDevices[i] = GridDeviceSettings{
@@ -91,6 +93,31 @@ func displayDevices(devices []*schedule.DeviceSetting) []GridDeviceSettings {
 	return gridDevices
 }
 
+type GridDevice struct {
+	FriendlyName string
+	ID           string
+}
+
+func (gd GridDevice) CreateEmptyDeviceSettings() GridDeviceSettings {
+	return GridDeviceSettings{
+		FriendlyName: gd.FriendlyName,
+		ID:           gd.ID,
+		Brightness:   100,
+		Color:        "#ffffff",
+	}
+}
+
+func toDeviceList(devices []*schedule.Device) []GridDevice {
+	var result []GridDevice
+	for _, d := range devices {
+		result = append(result, GridDevice{
+			FriendlyName: d.FriendlyName,
+			ID:           d.ID,
+		})
+	}
+	return result
+}
+
 func displaySchedules(schedules []*schedule.Schedule) []GridSchedule {
 	var result []GridSchedule
 	for i, s := range schedules {
@@ -100,7 +127,7 @@ func displaySchedules(schedules []*schedule.Schedule) []GridSchedule {
 			OffTime:      s.OffTime,
 			FriendlyName: s.FriendlyName,
 			Row:          i + 1,
-			Devices:      displayDevices(s.DeviceSettings),
+			Devices:      toGridDeviceSettings(s.DeviceSettings),
 		})
 	}
 	return result
