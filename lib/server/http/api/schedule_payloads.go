@@ -19,7 +19,9 @@ type SchedulePOSTRequestBody struct {
 }
 
 func (body SchedulePOSTRequestBody) Apply(s *schedule.Schedule) error {
-	s.FriendlyName = body.Name
+	if body.Name != "" {
+		s.FriendlyName = body.Name
+	}
 	onTime, err := htmlTimeToSecondsInDay(body.OnTime)
 	if err != nil {
 		return err

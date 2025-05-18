@@ -39,6 +39,11 @@ header h1 {
 .label {
     background-color: mediumslateblue;
     text-align: center;
+    align-content: center;
+}
+
+.label:hover {
+    background-color: lightcoral;
 }
 
 .line {
@@ -109,6 +114,11 @@ label {
 
 button {
     background-color: mediumslateblue;
-    padding: 3px;
+    padding: 10px;
     margin: 5px;
+    border: 0;
+}
+
+button:hover {
+    background-color: lightcoral;
 }

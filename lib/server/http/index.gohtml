@@ -100,7 +100,7 @@
             </div>
         {{ end }}
         <div style="grid-row-start:calc({{ .Schedules | len }} + 2)">
-            <button>Create New Schedule</button>
+            <button class="chamfer" onclick="openpanel('new')">Create New Schedule</button>
         </div>
     </article>
 </section>
@@ -124,7 +124,7 @@
                     <label>Off Time
                         <input type="time" step="60" name="offtime" value="{{.OffTime.HTMLValue}}">
                     </label>
-                    <button type="submit">Update</button>
+                    <button class="chamfer" type="submit">Update</button>
                 </form>
                 <section>
                     <header>
@@ -152,7 +152,7 @@
                                             Color
                                             <input type="color" name="color" value="{{.Color}}"/>
                                         </label>
-                                        <button style="width: 50%" type="submit">Update</button>
+                                        <button class="chamfer" style="width: 50%" type="submit">Update</button>
                                     </form>
                                 </article>
                             </section>
@@ -175,7 +175,7 @@
                 <label>Off Time
                     <input type="time" step="60" name="offtime" value="14:00">
                 </label>
-                <button type="submit">Create</button>
+                <button type="submit" class="chamfer">Create</button>
             </form>
             <section>
             </section>
