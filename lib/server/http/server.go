@@ -21,7 +21,7 @@ const POST_DEVICE_SETTINGS_ROUTE_PATTERN = "POST /api/schedules/{schedule_id}/de
 var homepageTemplate *template.Template
 
 func init() {
-	homepageTemplate = template.Must(template.ParseFiles("lib/server/http/index.gohtml"))
+	homepageTemplate = template.Must(template.ParseFiles("lib/server/http/index.gohtml", "lib/server/http/device.gohtml"))
 }
 
 type Server interface {
@@ -46,11 +46,12 @@ func (s *realServer) Serve(addr string) error {
 	fs := os.DirFS("./public")
 	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.FS(fs))))
 	scheduleStore := schedule.NewStore()
-	mux.HandleFunc("/", indexPage(scheduleStore))
+	deviceStore := zigbee2mqtt.NewInMemoryStore()
+	mux.HandleFunc("/", indexPage(scheduleStore, deviceStore))
 	mux.HandleFunc(PUT_SCHEDULES_ROUTE_PATTERN, api.SchedulePUTHandler(scheduleStore))
 	mux.HandleFunc(POST_SCHEDULES_ROUTE_PATTERN, api.SchedulePOSTHandler(scheduleStore))
 	mux.HandleFunc(PUT_DEVICE_SETTINGS_ROUTE_PATTERN, api.ScheduleDevicePUTHandler(scheduleStore))
-	mux.HandleFunc(POST_DEVICE_SETTINGS_ROUTE_PATTERN, api.ScheduleDevicePOSTHandler(scheduleStore, zigbee2mqtt.NewInMemoryStore()))
+	mux.HandleFunc(POST_DEVICE_SETTINGS_ROUTE_PATTERN, api.ScheduleDevicePOSTHandler(scheduleStore, deviceStore))
 	server := &http.Server{Addr: addr, Handler: mux}
 	s.server = server
 	return server.ListenAndServe()

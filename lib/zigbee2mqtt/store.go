@@ -35,15 +35,15 @@ func NewInMemoryStore() Store {
 		},
 		{
 			FriendlyName: "Playroom Light",
-			ID:           "3265D1FD-4FE5-4662-8AFE-C966089BCCB9",
+			ID:           "3265D1FD-4FE5-4662-8AFE-C9660891CCB9",
 		},
 		{
 			FriendlyName: "Work Desk Lamp",
-			ID:           "3265D1FD-4FE5-4662-8AFE-C966089BCCA9",
+			ID:           "3265D1FD-4FE5-4662-8AFE-C9D6089BCCA9",
 		},
 		{
 			FriendlyName: "Family Desk Lamp",
-			ID:           "3265D1FD-4FE5-4662-8AFE-C966089BCCB9",
+			ID:           "3265D1FD-4FE5-7662-8AFE-C966089BCCB9",
 		},
 	}}
 }

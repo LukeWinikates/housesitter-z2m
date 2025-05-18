@@ -30,12 +30,24 @@
       function createSchedule(form, event) {
         event.preventDefault();
         const formData = new FormData(form);
-        const newScheduleValues = Object.fromEntries(formData)
+        // const  newScheduleValues = Object.fromEntries(formData)
+        const {name, offtime, ontime, ...newScheduleValues} = Object.fromEntries(formData)
         const url = `/api/schedules/`
 
+        const devices = Object.values(
+          Object.entries(newScheduleValues)
+            .filter(e => e[0].startsWith("device"))
+            .reduce((memo, currentValue) => {
+              const splits = currentValue[0].split("[").map(s => s.replace("]", ""))
+              const deviceId = splits[1]
+              const attribute = splits[2]
+              memo[deviceId] = memo[deviceId] || {}
+              memo[deviceId][attribute] = currentValue[1];
+              return memo
+            }, {})).filter(d => d.include);
         fetch(url, {
           method: "POST",
-          body: JSON.stringify(newScheduleValues)
+          body: JSON.stringify({name, offtime, ontime, devices})
         }).then(() => {
           // location.reload()
           // reload?
@@ -87,7 +99,7 @@
                 <div>
                     {{range .Devices}}
                         <span title="{{.FriendlyName}}"
-                                style="display: inline-block; height: 5px; width: 5px; padding: 5px; background-color: {{.Color}}">
+                              style="display: inline-block; height: 5px; width: 5px; padding: 5px; background-color: {{.Color}}">
 
                         </span>
                     {{end}}
@@ -99,8 +111,8 @@
                 {{ .FormattedTime }}
             </div>
         {{ end }}
-        <div style="grid-row-start:calc({{ .Schedules | len }} + 2)">
-            <button class="chamfer" onclick="openpanel('new')">Create New Schedule</button>
+        <div style="grid-row-start:calc({{ .Schedules | len }} + 2); grid-column-start: tick 1; grid-column-end: tick 48;">
+            <button class="chamfer" style="width: 100%" onclick="openpanel('new')">Create New Schedule</button>
         </div>
     </article>
 </section>
@@ -133,41 +145,21 @@
                     <article class="flex">
                         {{ range .Devices}}
                             <section id="schedule-{{$scheduleID}}-device-{{.ID}}" class="chamfer card">
-                                <header>
-                                    <h3>{{.FriendlyName}}</h3>
-                                </header>
-                                <article>
-                                    <form style="display: flex; flex-direction: column; align-items: flex-end"
-                                          onsubmit="updateScheduleDeviceSettings(this, event)">
-                                        <input type="hidden" name="schedule-id" value="{{$scheduleID}}">
-                                        <input type="hidden" name="id" value="{{.ID}}">
-                                        <label class="label-fullwidth">
-                                            <span>Brightness</span>
-                                            <input type="range" min="0" max="100" style="width:55%;"
-                                                   name="brightness"
-                                                   value="{{.Brightness}}"
-                                                   list="markers"/>
-                                        </label>
-                                        <label class="label-fullwidth">
-                                            Color
-                                            <input type="color" name="color" value="{{.Color}}"/>
-                                        </label>
-                                        <button class="chamfer" style="width: 50%" type="submit">Update</button>
-                                    </form>
-                                </article>
+                                {{template "device" .}}
                             </section>
                         {{ end }}
+                        <button>Add More Devices</button>
                     </article>
                 </section>
             </article>
         </section>
     {{ end }}
     <section class="card" id="schedule-new">
-        <header>
-            <sub>schedule</sub>
-        </header>
-        <article>
-            <form class="form-oneline" onsubmit="createSchedule(this, event)">
+        <form class="form-oneline" onsubmit="createSchedule(this, event)">
+            <header>
+                <sub>schedule</sub>
+            </header>
+            <article>
                 <h2><input type="text" name="name"></h2>
                 <label>On Time
                     <input type="time" name="ontime" step="60" value="09:00">
@@ -176,10 +168,18 @@
                     <input type="time" step="60" name="offtime" value="14:00">
                 </label>
                 <button type="submit" class="chamfer">Create</button>
-            </form>
-            <section>
-            </section>
-        </article>
+
+                <section>
+                    <article class="flex">
+                        {{ range .AllDevices }}
+                            <section id="schedule-new-device-{{.ID}}" class="chamfer card">
+                                {{template "device" .CreateEmptyDeviceSettings }}
+                            </section>
+                        {{ end }}
+                    </article>
+                </section>
+            </article>
+        </form>
     </section>
 </article>
 </body>
