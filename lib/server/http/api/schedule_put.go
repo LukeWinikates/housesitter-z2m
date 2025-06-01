@@ -1,13 +1,13 @@
 package api
 
 import (
-	"LukeWinikates/january-twenty-five/lib/schedule"
+	"LukeWinikates/january-twenty-five/lib/database"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
-func SchedulePUTHandler(scheduleStore schedule.Store) func(writer http.ResponseWriter, request *http.Request) {
+func SchedulePUTHandler(scheduleStore database.Store) func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		idFromPath := request.PathValue("schedule_id")
 		fmt.Println(idFromPath)

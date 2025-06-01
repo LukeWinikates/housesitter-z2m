@@ -1,6 +1,7 @@
-package schedule
+package database
 
 import (
+	"LukeWinikates/january-twenty-five/lib/time"
 	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -89,8 +90,8 @@ func NewDBStore(db *gorm.DB, seed bool) (Store, error) {
 			{
 				FriendlyName: "Left the Light On",
 				ID:           "E0D5118D-1554-4394-93A8-EFC6C7276D0A",
-				OnTime:       8 * Hour,
-				OffTime:      5*Hour + PM,
+				OnTime:       8 * timeofday.Hour,
+				OffTime:      5*timeofday.Hour + timeofday.PM,
 				DeviceSettings: []*DeviceSetting{
 					{
 						Device:     nightstand,
@@ -101,8 +102,8 @@ func NewDBStore(db *gorm.DB, seed bool) (Store, error) {
 			}, {
 				FriendlyName: "Cooking",
 				ID:           "31CD5DBD-E5F9-43FE-A6D3-FB7D5E07E57F",
-				OnTime:       12 * Hour,
-				OffTime:      9*Hour + PM,
+				OnTime:       12 * timeofday.Hour,
+				OffTime:      9*timeofday.Hour + timeofday.PM,
 				DeviceSettings: []*DeviceSetting{
 					{
 						Device:     playroomLight,
@@ -114,8 +115,8 @@ func NewDBStore(db *gorm.DB, seed bool) (Store, error) {
 			{
 				ID:           "3265D1FD-4FE5-4662-8AFE-C966089BCCB0",
 				FriendlyName: "Evening Puttering",
-				OnTime:       8*Hour + PM,
-				OffTime:      10*Hour + 30*Minute + PM,
+				OnTime:       8*timeofday.Hour + timeofday.PM,
+				OffTime:      10*timeofday.Hour + 30*timeofday.Minute + timeofday.PM,
 
 				DeviceSettings: []*DeviceSetting{
 					{

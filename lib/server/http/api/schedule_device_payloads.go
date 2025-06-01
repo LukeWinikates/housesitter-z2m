@@ -1,6 +1,8 @@
 package api
 
-import "LukeWinikates/january-twenty-five/lib/schedule"
+import (
+	"LukeWinikates/january-twenty-five/lib/database"
+)
 
 type DeviceSettingPUTRequestBody struct {
 	Id string `json:"id"`
@@ -12,7 +14,7 @@ type DeviceSettingPOSTRequestBody struct {
 	Color      string `json:"color"`
 }
 
-func (body DeviceSettingPOSTRequestBody) Apply(s *schedule.DeviceSetting) error {
+func (body DeviceSettingPOSTRequestBody) Apply(s *database.DeviceSetting) error {
 	s.Brightness = uint8(body.Brightness)
 	s.Color = body.Color
 	return nil

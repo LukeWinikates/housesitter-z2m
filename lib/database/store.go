@@ -1,4 +1,4 @@
-package schedule
+package database
 
 type Store interface {
 	Find(id string) (*Schedule, error)

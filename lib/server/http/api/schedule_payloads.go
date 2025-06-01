@@ -1,7 +1,8 @@
 package api
 
 import (
-	"LukeWinikates/january-twenty-five/lib/schedule"
+	"LukeWinikates/january-twenty-five/lib/database"
+	time2 "LukeWinikates/january-twenty-five/lib/time"
 	"fmt"
 	"strconv"
 	"strings"
@@ -18,7 +19,7 @@ type SchedulePOSTRequestBody struct {
 	OffTime string `json:"offtime"`
 }
 
-func (body SchedulePOSTRequestBody) Apply(s *schedule.Schedule) error {
+func (body SchedulePOSTRequestBody) Apply(s *database.Schedule) error {
 	if body.Name != "" {
 		s.FriendlyName = body.Name
 	}
@@ -36,7 +37,7 @@ func (body SchedulePOSTRequestBody) Apply(s *schedule.Schedule) error {
 }
 
 // eg 22:15
-func htmlTimeToSecondsInDay(time string) (schedule.SecondsInDay, error) {
+func htmlTimeToSecondsInDay(time string) (time2.SecondsInDay, error) {
 	parts := strings.Split(time, ":")
 	fmt.Println(parts)
 	hrs, err := strconv.Atoi(parts[0])
@@ -47,5 +48,5 @@ func htmlTimeToSecondsInDay(time string) (schedule.SecondsInDay, error) {
 	if err != nil {
 		return 0, err
 	}
-	return schedule.SecondsInDay((hrs * 60 * 60) + (mins * 60)), nil
+	return time2.SecondsInDay((hrs * 60 * 60) + (mins * 60)), nil
 }

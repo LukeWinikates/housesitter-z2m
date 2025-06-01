@@ -1,14 +1,15 @@
 package index
 
 import (
-	"LukeWinikates/january-twenty-five/lib/schedule"
+	"LukeWinikates/january-twenty-five/lib/database"
+	"LukeWinikates/january-twenty-five/lib/timeofday"
 	"fmt"
 	"html/template"
 )
 
 type GridSchedule struct {
-	OnTime       schedule.SecondsInDay
-	OffTime      schedule.SecondsInDay
+	OnTime       timeofday.SecondsInDay
+	OffTime      timeofday.SecondsInDay
 	FriendlyName string
 	Devices      []GridDeviceSettings
 	Row          int
@@ -52,7 +53,7 @@ type ViewGrid struct {
 	AllDevices  []GridDevice
 }
 
-func Grid(list []*schedule.Schedule, allDevices []*schedule.Device) ViewGrid {
+func Grid(list []*database.Schedule, allDevices []*database.Device) ViewGrid {
 
 	var legends = make([]Legend, 48)
 
@@ -79,7 +80,7 @@ func Grid(list []*schedule.Schedule, allDevices []*schedule.Device) ViewGrid {
 	}
 }
 
-func toGridDeviceSettings(devices []*schedule.DeviceSetting) []GridDeviceSettings {
+func toGridDeviceSettings(devices []*database.DeviceSetting) []GridDeviceSettings {
 	gridDevices := make([]GridDeviceSettings, len(devices))
 	for i, device := range devices {
 		gridDevices[i] = GridDeviceSettings{
@@ -107,7 +108,7 @@ func (gd GridDevice) CreateEmptyDeviceSettings() GridDeviceSettings {
 	}
 }
 
-func toDeviceList(devices []*schedule.Device) []GridDevice {
+func toDeviceList(devices []*database.Device) []GridDevice {
 	var result []GridDevice
 	for _, d := range devices {
 		result = append(result, GridDevice{
@@ -118,7 +119,7 @@ func toDeviceList(devices []*schedule.Device) []GridDevice {
 	return result
 }
 
-func displaySchedules(schedules []*schedule.Schedule) []GridSchedule {
+func displaySchedules(schedules []*database.Schedule) []GridSchedule {
 	var result []GridSchedule
 	for i, s := range schedules {
 		result = append(result, GridSchedule{

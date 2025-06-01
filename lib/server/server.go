@@ -1,7 +1,8 @@
 package server
 
 import (
-	"LukeWinikates/january-twenty-five/lib/schedule"
+	"LukeWinikates/january-twenty-five/lib/database"
+	"LukeWinikates/january-twenty-five/lib/runtime"
 	"LukeWinikates/january-twenty-five/lib/server/homekit"
 	"LukeWinikates/january-twenty-five/lib/server/http"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
@@ -32,11 +33,11 @@ func (r *realServer) Start() error {
 			case device := <-deviceChan:
 				if device.Definition != nil && strings.Contains(device.Definition.Description, "bulb") {
 					fmt.Println(device.FriendlyName)
-					var savedDevice *schedule.Device
+					var savedDevice *database.Device
 					r.database.Find(savedDevice, "ieee_address = ?", device.IEEEAddress)
 					if savedDevice == nil {
 						fmt.Printf("found new device: %s\n", device.FriendlyName)
-						r.database.Create(&schedule.Device{
+						r.database.Create(&database.Device{
 							FriendlyName: device.FriendlyName,
 							IEEEAddress:  device.IEEEAddress,
 							ID:           uuid.New().String(),
@@ -51,6 +52,7 @@ func (r *realServer) Start() error {
 
 	fmt.Println("got here")
 	r.hapServer.Start()
+	runtime.NewRunner().Start()
 	return r.httpServer.Serve(r.options.Hostname)
 }
 

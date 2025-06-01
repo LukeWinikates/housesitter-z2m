@@ -1,13 +1,13 @@
 package api
 
 import (
-	"LukeWinikates/january-twenty-five/lib/schedule"
+	"LukeWinikates/january-twenty-five/lib/database"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
-func SchedulePOSTHandler(scheduleStore schedule.Store) func(writer http.ResponseWriter, request *http.Request) {
+func SchedulePOSTHandler(scheduleStore database.Store) func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		decoder := json.NewDecoder(request.Body)
 		var requestBody SchedulePOSTRequestBody
@@ -19,7 +19,7 @@ func SchedulePOSTHandler(scheduleStore schedule.Store) func(writer http.Response
 			// general error handler / logger
 		}
 
-		newSchedule := &schedule.Schedule{}
+		newSchedule := &database.Schedule{}
 		err = requestBody.Apply(newSchedule)
 
 		if err != nil {

@@ -1,8 +1,10 @@
-package schedule
+package timeofday
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 func TestName(t *testing.T) {
@@ -19,4 +21,12 @@ func TestName(t *testing.T) {
 		fmt.Println(time.HumanReadable())
 		t.Fail()
 	}
+}
+
+func TestTimeToSecondsInDay(t *testing.T) {
+	example, err := time.Parse(time.DateTime, "2025-06-01 07:55:13")
+	assert.NoError(t, err)
+
+	assert.Equal(t, TimeToSecondsInDay(example), 25_200+3_300+13)
+
 }

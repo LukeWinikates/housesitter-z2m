@@ -1,7 +1,7 @@
 package http
 
 import (
-	"LukeWinikates/january-twenty-five/lib/schedule"
+	"LukeWinikates/january-twenty-five/lib/database"
 	"LukeWinikates/january-twenty-five/lib/server/http/api"
 	"context"
 	"gorm.io/gorm"
@@ -48,11 +48,11 @@ func (s *realServer) Serve(addr string) error {
 	mux := http.NewServeMux()
 	fs := os.DirFS("./public")
 	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.FS(fs))))
-	scheduleStore, err := schedule.NewDBStore(s.db, true)
+	scheduleStore, err := database.NewDBStore(s.db, true)
 	if err != nil {
 		return err
 	}
-	deviceStore := schedule.NewDBDeviceStore(s.db)
+	deviceStore := database.NewDBDeviceStore(s.db)
 	mux.HandleFunc("/", indexPage(scheduleStore, deviceStore))
 	mux.HandleFunc(PUT_SCHEDULES_ROUTE_PATTERN, api.SchedulePUTHandler(scheduleStore))
 	mux.HandleFunc(POST_SCHEDULES_ROUTE_PATTERN, api.SchedulePOSTHandler(scheduleStore))

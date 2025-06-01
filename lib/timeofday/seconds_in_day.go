@@ -1,43 +1,9 @@
-package schedule
+package timeofday
 
 import (
 	"fmt"
 	"time"
-
-	"gorm.io/gorm"
 )
-
-type HexColor = string
-
-type Schedule struct {
-	gorm.Model
-	OnTime         SecondsInDay
-	OffTime        SecondsInDay
-	DeviceSettings []*DeviceSetting
-	FriendlyName   string
-	ID             string `gorm:"primaryKey"`
-}
-
-type DeviceSetting struct {
-	Device     *Device
-	Brightness uint8
-	Color      HexColor
-	gorm.Model
-	ScheduleID string
-	DeviceID   string
-}
-
-type Device struct {
-	gorm.Model
-	FriendlyName string
-	IEEEAddress  string
-	ID           string `gorm:"primaryKey"`
-}
-
-type Settings struct {
-	gorm.Model
-	Active bool
-}
 
 const Second SecondsInDay = 1
 const Minute = 60 * Second
@@ -46,7 +12,7 @@ const PM = 12 * Hour
 
 type SecondsInDay int
 
-func TimeOfDay(hour, minute, ampm SecondsInDay) SecondsInDay {
+func NewSecondsInDay(hour, minute, ampm SecondsInDay) SecondsInDay {
 	return hour*Hour + minute*Minute + ampm
 }
 
@@ -83,4 +49,12 @@ func ToFriendlyTime(seconds SecondsInDay) string {
 		return ""
 	}
 	return fmt.Sprintf("%v", duration)
+}
+
+func TimeToSecondsInDay(t time.Time) SecondsInDay {
+	return SecondsInDay(
+		(t.Hour() * int(Hour)) +
+			(t.Minute() * int(Minute)) +
+			(t.Second()),
+	)
 }
