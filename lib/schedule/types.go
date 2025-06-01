@@ -34,6 +34,11 @@ type Device struct {
 	ID           string `gorm:"primaryKey"`
 }
 
+type Settings struct {
+	gorm.Model
+	Active bool
+}
+
 const Second SecondsInDay = 1
 const Minute = 60 * Second
 const Hour = 60 * Minute

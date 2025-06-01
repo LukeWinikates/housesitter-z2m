@@ -2,6 +2,7 @@ package server
 
 import (
 	"LukeWinikates/january-twenty-five/lib/schedule"
+	"LukeWinikates/january-twenty-five/lib/server/homekit"
 	"LukeWinikates/january-twenty-five/lib/server/http"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
 	"fmt"
@@ -20,6 +21,7 @@ type realServer struct {
 	httpServer http.Server
 	options    Options
 	database   *gorm.DB
+	hapServer  homekit.Server
 }
 
 func (r *realServer) Start() error {
@@ -48,6 +50,7 @@ func (r *realServer) Start() error {
 	}()
 
 	fmt.Println("got here")
+	r.hapServer.Start()
 	return r.httpServer.Serve(r.options.Hostname)
 }
 
@@ -61,10 +64,15 @@ type Options struct {
 }
 
 func New(db *gorm.DB, client zigbee2mqtt.Client, opts Options) (Server, error) {
+	hapServer, err := homekit.NewServer()
+	if err != nil {
+		return nil, err
+	}
 	return &realServer{
 		database:   db,
 		ztmClient:  client,
 		options:    opts,
 		httpServer: http.NewServer(db),
+		hapServer:  hapServer,
 	}, nil
 }

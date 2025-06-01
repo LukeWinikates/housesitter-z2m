@@ -60,7 +60,7 @@ func (store *dbStore) SaveChanges(id string, s *Schedule) error {
 
 func NewDBStore(db *gorm.DB, seed bool) (Store, error) {
 	if seed {
-		err := db.AutoMigrate(&Schedule{}, &DeviceSetting{}, &Device{})
+		err := db.AutoMigrate(&Schedule{}, &DeviceSetting{}, &Device{}, &Settings{})
 		if err != nil {
 			return nil, err
 		}
