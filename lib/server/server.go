@@ -26,6 +26,10 @@ type realServer struct {
 }
 
 func (r *realServer) Start() error {
+	store, err := database.NewDBStore(r.database, false)
+	if err != nil {
+		return err
+	}
 	deviceChan, errChan := r.ztmClient.DeviceUpdates()
 	go func() {
 		for {
@@ -33,7 +37,7 @@ func (r *realServer) Start() error {
 			case device := <-deviceChan:
 				if device.Definition != nil && strings.Contains(device.Definition.Description, "bulb") {
 					fmt.Println(device.FriendlyName)
-					var savedDevice *database.Device
+					savedDevice := &database.Device{}
 					r.database.Find(savedDevice, "ieee_address = ?", device.IEEEAddress)
 					if savedDevice == nil {
 						fmt.Printf("found new device: %s\n", device.FriendlyName)
@@ -50,9 +54,9 @@ func (r *realServer) Start() error {
 		}
 	}()
 
-	fmt.Println("got here")
 	r.hapServer.Start()
-	runtime.NewRunner().Start()
+
+	runtime.NewRunner(store, r.ztmClient).Start()
 	return r.httpServer.Serve(r.options.Hostname)
 }
 

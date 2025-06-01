@@ -45,6 +45,8 @@
               memo[deviceId][attribute] = currentValue[1];
               return memo
             }, {})).filter(d => d.include);
+        devices.forEach((d => {d.brightness = parseInt(d.brightness)}))
+
         fetch(url, {
           method: "POST",
           body: JSON.stringify({name, offtime, ontime, devices})

@@ -69,6 +69,7 @@ header h1 {
 
 .flex {
     display: flex;
+    flex-wrap: wrap;
 }
 
 .label-fullwidth {

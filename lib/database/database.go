@@ -1,7 +1,7 @@
 package database
 
 import (
-	"LukeWinikates/january-twenty-five/lib/time"
+	"LukeWinikates/january-twenty-five/lib/timeofday"
 	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"

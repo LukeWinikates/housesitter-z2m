@@ -33,7 +33,7 @@ func SchedulePUTHandler(scheduleStore database.Store) func(writer http.ResponseW
 			return
 		}
 
-		err = requestBody.Apply(s)
+		//err = requestBody.Apply(s)
 		if err != nil {
 			writer.WriteHeader(500)
 			return

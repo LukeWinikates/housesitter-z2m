@@ -27,6 +27,5 @@ func TestTimeToSecondsInDay(t *testing.T) {
 	example, err := time.Parse(time.DateTime, "2025-06-01 07:55:13")
 	assert.NoError(t, err)
 
-	assert.Equal(t, TimeToSecondsInDay(example), 25_200+3_300+13)
-
+	assert.Equal(t, SecondsInDay(25_200+3_300+13), TimeToSecondsInDay(example))
 }

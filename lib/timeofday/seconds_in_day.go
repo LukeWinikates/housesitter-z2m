@@ -58,3 +58,8 @@ func TimeToSecondsInDay(t time.Time) SecondsInDay {
 			(t.Second()),
 	)
 }
+
+func (s SecondsInDay) Today() time.Time {
+	y, m, d := time.Now().Date()
+	return time.Date(y, m, d, s.Hour(), s.Minute(), 0, 0, time.Local)
+}

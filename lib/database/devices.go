@@ -15,7 +15,7 @@ type dbDeviceStore struct {
 
 func (d *dbDeviceStore) Find(id string) (*Device, error) {
 	device := &Device{}
-	result := d.database.Find(device, id)
+	result := d.database.Find(device, "id = ?", id)
 	return device, result.Error
 }
 

@@ -62,6 +62,7 @@ func (c *RealClient) SetDeviceState(deviceName string, message devices.LightCont
 	}
 
 	topic := fmt.Sprintf("zigbee2mqtt/%s/set", deviceName)
+	fmt.Printf("sending message for topic: %s\n", topic)
 	publish := c.mqttClient.Publish(topic, 0, false, payloadBytes)
 	if publish.Error() != nil {
 		return publish.Error()

@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"LukeWinikates/january-twenty-five/lib/database"
+	"LukeWinikates/january-twenty-five/lib/database/queries"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt/devices"
 	"fmt"
@@ -24,30 +25,33 @@ func (r *runner) Start() {
 		for {
 			select {
 			case tick := <-ticker.C:
-				fmt.Printf("ticking at: %s", tick.String())
+				fmt.Printf("ticking at: %s\n", tick.String())
 				r.scheduleEventsForNextInterval(tick.Add(r.interval))
 			}
 		}
 	}()
 }
 
-func (r *runner) scheduleEventsForNextInterval(timer time.Time) {
-	for _, s := range r.store.All() {
-		// is the ontime between now and next interval?
-		timer := &time.NewTimer(executionTime)
+func (r *runner) scheduleEventsForNextInterval(end time.Time) {
+	transitions := queries.NewTransitionsInWindowQuery(r.store).Find(r.lastRun, end)
+	fmt.Printf("found %v transitions\n", len(transitions))
+	for _, t := range transitions {
+		timer := time.NewTimer(t.Time.Today().Sub(time.Now()))
 		go func() {
 			<-timer.C
-			for i, d := range s.DeviceSettings {
-				d.Device.FriendlyName
-				r.z2mClient.SetDeviceState(d.Device.FriendlyName, devices.OnMessage())
+			msg := devices.OffMessage()
+			if t.On {
+				msg = devices.OnMessage()
+			}
+
+			fmt.Printf("sending message for %s\n", t.Device.FriendlyName)
+			err := r.z2mClient.SetDeviceState(t.Device.IEEEAddress, msg)
+			if err != nil {
+				fmt.Println("err")
 			}
 		}()
-
-		// is the offtime between now and next interval?
-		//if s.OnTime >
 	}
 	r.lastRun = time.Now()
-
 }
 
 type Runner interface {

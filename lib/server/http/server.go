@@ -48,14 +48,14 @@ func (s *realServer) Serve(addr string) error {
 	mux := http.NewServeMux()
 	fs := os.DirFS("./public")
 	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.FS(fs))))
-	scheduleStore, err := database.NewDBStore(s.db, true)
+	scheduleStore, err := database.NewDBStore(s.db, false)
 	if err != nil {
 		return err
 	}
 	deviceStore := database.NewDBDeviceStore(s.db)
 	mux.HandleFunc("/", indexPage(scheduleStore, deviceStore))
 	mux.HandleFunc(PUT_SCHEDULES_ROUTE_PATTERN, api.SchedulePUTHandler(scheduleStore))
-	mux.HandleFunc(POST_SCHEDULES_ROUTE_PATTERN, api.SchedulePOSTHandler(scheduleStore))
+	mux.HandleFunc(POST_SCHEDULES_ROUTE_PATTERN, api.SchedulePOSTHandler(s.db))
 	mux.HandleFunc(PUT_DEVICE_SETTINGS_ROUTE_PATTERN, api.ScheduleDevicePUTHandler(scheduleStore))
 	mux.HandleFunc(POST_DEVICE_SETTINGS_ROUTE_PATTERN, api.ScheduleDevicePOSTHandler(scheduleStore, deviceStore))
 	server := &http.Server{Addr: addr, Handler: mux}
