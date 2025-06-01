@@ -5,6 +5,7 @@ import (
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt/payloads"
 	"fmt"
+	"gorm.io/gorm"
 )
 
 type Server interface {
@@ -16,6 +17,7 @@ type realServer struct {
 	ztmClient  zigbee2mqtt.Client
 	httpServer http.Server
 	options    Options
+	database   *gorm.DB
 }
 
 func (r *realServer) Start() error {
@@ -25,7 +27,6 @@ func (r *realServer) Start() error {
 		}
 	})
 	return r.httpServer.Serve(r.options.Hostname)
-	// start device listener
 }
 
 func (r *realServer) Stop() error {
@@ -37,10 +38,11 @@ type Options struct {
 	Hostname string
 }
 
-func New(client zigbee2mqtt.Client, opts Options) (Server, error) {
+func New(db *gorm.DB, client zigbee2mqtt.Client, opts Options) (Server, error) {
 	return &realServer{
+		database:   db,
 		ztmClient:  client,
 		options:    opts,
-		httpServer: http.NewServer(),
+		httpServer: http.NewServer(db),
 	}, nil
 }

@@ -3,27 +3,34 @@ package schedule
 import (
 	"fmt"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type HexColor = string
 
 type Schedule struct {
+	gorm.Model
 	OnTime         SecondsInDay
 	OffTime        SecondsInDay
 	DeviceSettings []*DeviceSetting
 	FriendlyName   string
-	ID             string
+	ID             string `gorm:"primaryKey"`
 }
 
 type DeviceSetting struct {
 	Device     *Device
 	Brightness uint8
 	Color      HexColor
+	gorm.Model
+	ScheduleID string
+	DeviceID   string
 }
 
 type Device struct {
+	gorm.Model
 	FriendlyName string
-	ID           string
+	ID           string `gorm:"primaryKey"`
 }
 
 const Second SecondsInDay = 1

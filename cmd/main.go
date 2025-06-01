@@ -4,6 +4,8 @@ import (
 	"LukeWinikates/january-twenty-five/lib/server"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
 	"fmt"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	"log"
 	"os"
 	"os/signal"
@@ -33,7 +35,11 @@ func createServer() (server.Server, error) {
 	//client := zigbee2mqtt.NewClient(os.Getenv("MQTT_HOST"))
 	client := zigbee2mqtt.NoOpClient()
 	options := createServerOptions()
-	s, err := server.New(client, options)
+	db, err := gorm.Open(sqlite.Open("tmp/test.db"), &gorm.Config{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect database")
+	}
+	s, err := server.New(db, client, options)
 	return s, err
 }
 

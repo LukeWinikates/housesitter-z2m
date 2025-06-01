@@ -5,6 +5,7 @@ import (
 	"LukeWinikates/january-twenty-five/lib/server/http/api"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
 	"context"
+	"gorm.io/gorm"
 	"html/template"
 	"net/http"
 	"os"
@@ -31,10 +32,13 @@ type Server interface {
 
 type realServer struct {
 	server *http.Server
+	db     *gorm.DB
 }
 
-func NewServer() Server {
-	return &realServer{}
+func NewServer(db *gorm.DB) Server {
+	return &realServer{
+		db: db,
+	}
 }
 
 func (s *realServer) Stop() error {
@@ -45,7 +49,10 @@ func (s *realServer) Serve(addr string) error {
 	mux := http.NewServeMux()
 	fs := os.DirFS("./public")
 	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.FS(fs))))
-	scheduleStore := schedule.NewStore()
+	scheduleStore, err := schedule.NewDBStore(s.db, false)
+	if err != nil {
+		return err
+	}
 	deviceStore := zigbee2mqtt.NewInMemoryStore()
 	mux.HandleFunc("/", indexPage(scheduleStore, deviceStore))
 	mux.HandleFunc(PUT_SCHEDULES_ROUTE_PATTERN, api.SchedulePUTHandler(scheduleStore))
