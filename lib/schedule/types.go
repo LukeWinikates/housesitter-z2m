@@ -30,6 +30,7 @@ type DeviceSetting struct {
 type Device struct {
 	gorm.Model
 	FriendlyName string
+	IEEEAddress  string
 	ID           string `gorm:"primaryKey"`
 }
 

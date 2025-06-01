@@ -8,6 +8,11 @@ import (
 type noOpClient struct {
 }
 
+func (n noOpClient) DeviceUpdates() (chan payloads.MessagePayload, chan error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (n noOpClient) SubscribeDeviceCatalog(_ func(devices []payloads.MessagePayload)) {
 }
 

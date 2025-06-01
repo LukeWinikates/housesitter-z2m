@@ -3,12 +3,11 @@ package http
 import (
 	"LukeWinikates/january-twenty-five/lib/schedule"
 	"LukeWinikates/january-twenty-five/lib/server/http/index"
-	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
 	"fmt"
 	"net/http"
 )
 
-func indexPage(store schedule.Store, deviceStore zigbee2mqtt.Store) func(writer http.ResponseWriter, request *http.Request) {
+func indexPage(store schedule.Store, deviceStore schedule.DeviceStore) func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html")
 		scheduleList := store.All()

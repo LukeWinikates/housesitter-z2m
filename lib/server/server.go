@@ -1,11 +1,13 @@
 package server
 
 import (
+	"LukeWinikates/january-twenty-five/lib/schedule"
 	"LukeWinikates/january-twenty-five/lib/server/http"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
-	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt/payloads"
 	"fmt"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type Server interface {
@@ -21,11 +23,31 @@ type realServer struct {
 }
 
 func (r *realServer) Start() error {
-	r.ztmClient.SubscribeDeviceCatalog(func(devices []payloads.MessagePayload) {
-		for _, device := range devices {
-			fmt.Println(device.FriendlyName)
+	deviceChan, errChan := r.ztmClient.DeviceUpdates()
+	go func() {
+		for {
+			select {
+			case device := <-deviceChan:
+				if device.Definition != nil && strings.Contains(device.Definition.Description, "bulb") {
+					fmt.Println(device.FriendlyName)
+					var savedDevice *schedule.Device
+					r.database.Find(savedDevice, "ieee_address = ?", device.IEEEAddress)
+					if savedDevice == nil {
+						fmt.Printf("found new device: %s\n", device.FriendlyName)
+						r.database.Create(&schedule.Device{
+							FriendlyName: device.FriendlyName,
+							IEEEAddress:  device.IEEEAddress,
+							ID:           uuid.New().String(),
+						})
+					}
+				}
+			case err := <-errChan:
+				fmt.Println("received", err.Error())
+			}
 		}
-	})
+	}()
+
+	fmt.Println("got here")
 	return r.httpServer.Serve(r.options.Hostname)
 }
 

@@ -98,7 +98,7 @@ type MessagePayload struct {
 	Disabled           bool                `json:"disabled"`
 	Endpoints          map[string]Endpoint `json:"endpoints"`
 	FriendlyName       string              `json:"friendly_name"`
-	IeeeAddress        string              `json:"ieee_address"`
+	IEEEAddress        string              `json:"ieee_address"`
 	InterviewCompleted bool                `json:"interview_completed"`
 	Interviewing       bool                `json:"interviewing"`
 	NetworkAddress     int                 `json:"network_address"`

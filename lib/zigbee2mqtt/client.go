@@ -25,26 +25,34 @@ var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err
 }
 
 type Client interface {
-	SubscribeDeviceCatalog(func(devices []payloads.MessagePayload))
 	SetDeviceState(getenv string, message devices.LightControl) error
+	DeviceUpdates() (chan payloads.MessagePayload, chan error)
 }
 
 type RealClient struct {
 	mqttClient mqtt.Client
 }
 
-func (c *RealClient) SubscribeDeviceCatalog(f func(devices []payloads.MessagePayload)) {
+func (c *RealClient) DeviceUpdates() (chan payloads.MessagePayload, chan error) {
 	topic := "zigbee2mqtt/bridge/devices"
+	payloadsChannel := make(chan payloads.MessagePayload)
+	errorsChannel := make(chan error)
+
 	token := c.mqttClient.Subscribe(topic, 1, func(client mqtt.Client, message mqtt.Message) {
-		fmt.Printf("Received message from topic: %s\n", message.Topic())
+		//fmt.Printf("Received message from topic: %s\n", message.Topic())
 		deviceList, err := payloads.Parse(message.Payload())
 		if err != nil {
-			log.Default().Printf("err: %s", err.Error())
-			return
+			errorsChannel <- err
 		}
-		f(deviceList)
+		for _, device := range deviceList {
+			payloadsChannel <- device
+		}
 	})
-	token.Wait()
+	go func() {
+		token.Wait()
+	}()
+
+	return payloadsChannel, errorsChannel
 }
 
 func (c *RealClient) SetDeviceState(deviceName string, message devices.LightControl) error {

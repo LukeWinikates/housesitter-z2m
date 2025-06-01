@@ -32,8 +32,7 @@ func main() {
 }
 
 func createServer() (server.Server, error) {
-	//client := zigbee2mqtt.NewClient(os.Getenv("MQTT_HOST"))
-	client := zigbee2mqtt.NoOpClient()
+	client := zigbee2mqtt.NewClient(os.Getenv("MQTT_HOST"))
 	options := createServerOptions()
 	db, err := gorm.Open(sqlite.Open("tmp/test.db"), &gorm.Config{})
 	if err != nil {

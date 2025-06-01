@@ -2,14 +2,13 @@ package api
 
 import (
 	"LukeWinikates/january-twenty-five/lib/schedule"
-	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 )
 
-func ScheduleDevicePOSTHandler(scheduleStore schedule.Store, deviceStore zigbee2mqtt.Store) func(writer http.ResponseWriter, request *http.Request) {
+func ScheduleDevicePOSTHandler(scheduleStore schedule.Store, deviceStore schedule.DeviceStore) func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		log.Default().Printf("handling %s\n", request.RequestURI)
 		scheduleIdFromPath := request.PathValue("schedule_id")
