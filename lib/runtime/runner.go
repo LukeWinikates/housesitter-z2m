@@ -23,11 +23,9 @@ func (r *runner) Start() {
 	ticker := time.NewTicker(r.interval)
 	go func() {
 		for {
-			select {
-			case tick := <-ticker.C:
-				fmt.Printf("ticking at: %s\n", tick.String())
-				r.scheduleEventsForNextInterval(tick.Add(r.interval))
-			}
+			tick := <-ticker.C
+			fmt.Printf("ticking at: %s\n", tick.String())
+			r.scheduleEventsForNextInterval(tick.Add(r.interval))
 		}
 	}()
 }
@@ -36,7 +34,7 @@ func (r *runner) scheduleEventsForNextInterval(end time.Time) {
 	transitions := queries.NewTransitionsInWindowQuery(r.store).Find(r.lastRun, end)
 	fmt.Printf("found %v transitions\n", len(transitions))
 	for _, t := range transitions {
-		timer := time.NewTimer(t.Time.Today().Sub(time.Now()))
+		timer := time.NewTimer(time.Until(t.Time.Today()))
 		go func() {
 			<-timer.C
 			msg := devices.OffMessage()

@@ -15,8 +15,6 @@ import (
 
 const PUT_SCHEDULES_ROUTE_PATTERN = "PUT /api/schedules/{schedule_id}"
 const POST_SCHEDULES_ROUTE_PATTERN = "POST /api/schedules/"
-const PUT_DEVICE_SETTINGS_ROUTE_PATTERN = "PUT /api/schedules/{schedule_id}/device_settings/{device_id}"
-const POST_DEVICE_SETTINGS_ROUTE_PATTERN = "POST /api/schedules/{schedule_id}/device_settings"
 
 var homepageTemplate *template.Template
 
@@ -54,10 +52,8 @@ func (s *realServer) Serve(addr string) error {
 	}
 	deviceStore := database.NewDBDeviceStore(s.db)
 	mux.HandleFunc("/", indexPage(scheduleStore, deviceStore))
-	mux.HandleFunc(PUT_SCHEDULES_ROUTE_PATTERN, api.SchedulePUTHandler(scheduleStore))
+	mux.HandleFunc(PUT_SCHEDULES_ROUTE_PATTERN, api.SchedulePUTHandler(scheduleStore, s.db))
 	mux.HandleFunc(POST_SCHEDULES_ROUTE_PATTERN, api.SchedulePOSTHandler(s.db))
-	mux.HandleFunc(PUT_DEVICE_SETTINGS_ROUTE_PATTERN, api.ScheduleDevicePUTHandler(scheduleStore))
-	mux.HandleFunc(POST_DEVICE_SETTINGS_ROUTE_PATTERN, api.ScheduleDevicePOSTHandler(scheduleStore, deviceStore))
 	server := &http.Server{Addr: addr, Handler: mux}
 	s.server = server
 	return server.ListenAndServe()

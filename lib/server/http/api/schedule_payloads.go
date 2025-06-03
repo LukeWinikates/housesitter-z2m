@@ -9,7 +9,6 @@ import (
 )
 
 type SchedulePUTRequestBody struct {
-	Id string `json:"id"`
 	SchedulePOSTRequestBody
 }
 

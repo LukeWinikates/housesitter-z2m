@@ -8,12 +8,13 @@ import (
 )
 
 type GridSchedule struct {
-	OnTime       timeofday.SecondsInDay
-	OffTime      timeofday.SecondsInDay
-	FriendlyName string
-	Devices      []GridDeviceSettings
-	Row          int
-	ID           string
+	OnTime           timeofday.SecondsInDay
+	OffTime          timeofday.SecondsInDay
+	FriendlyName     string
+	Devices          []GridDeviceSettings
+	Row              int
+	ID               string
+	AvailableDevices []GridDeviceSettings
 }
 
 type GridDeviceSettings struct {
@@ -23,6 +24,20 @@ type GridDeviceSettings struct {
 	ID           string
 	Brightness   uint8
 	Color        string
+	InSchedule   bool
+}
+
+func (d GridDeviceSettings) Checked() template.HTMLAttr {
+	if d.InSchedule {
+		return "checked"
+	}
+	return ""
+}
+func (d GridDeviceSettings) DisplayClasses() template.HTMLAttr {
+	if d.InSchedule {
+		return ""
+	}
+	return "hidden"
 }
 
 func (s GridSchedule) FormattedTime() string {
@@ -72,9 +87,10 @@ func Grid(list []*database.Schedule, allDevices []*database.Device) ViewGrid {
 			Title:          title,
 		}
 	}
+	allGridDevices := toDeviceList(allDevices)
 	return ViewGrid{
-		Schedules:   displaySchedules(list),
-		AllDevices:  toDeviceList(allDevices),
+		Schedules:   displaySchedules(list, allGridDevices),
+		AllDevices:  allGridDevices,
 		Legends:     legends,
 		GridClasses: "",
 	}
@@ -89,6 +105,7 @@ func toGridDeviceSettings(devices []*database.DeviceSetting) []GridDeviceSetting
 			ID:           device.Device.ID,
 			Brightness:   device.Brightness,
 			Color:        device.Color,
+			InSchedule:   true,
 		}
 	}
 	return gridDevices
@@ -119,16 +136,28 @@ func toDeviceList(devices []*database.Device) []GridDevice {
 	return result
 }
 
-func displaySchedules(schedules []*database.Schedule) []GridSchedule {
+func displaySchedules(schedules []*database.Schedule, allDevices []GridDevice) []GridSchedule {
 	var result []GridSchedule
 	for i, s := range schedules {
+		settings := toGridDeviceSettings(s.DeviceSettings)
+		var availableDevices []GridDeviceSettings
+		for _, d := range allDevices {
+			for _, set := range settings {
+				if set.ID == d.ID {
+					break
+				}
+			}
+			availableDevices = append(availableDevices, d.CreateEmptyDeviceSettings())
+		}
+
 		result = append(result, GridSchedule{
-			ID:           s.ID,
-			OnTime:       s.OnTime,
-			OffTime:      s.OffTime,
-			FriendlyName: s.FriendlyName,
-			Row:          i + 1,
-			Devices:      toGridDeviceSettings(s.DeviceSettings),
+			ID:               s.ID,
+			OnTime:           s.OnTime,
+			OffTime:          s.OffTime,
+			FriendlyName:     s.FriendlyName,
+			Row:              i + 1,
+			Devices:          settings,
+			AvailableDevices: availableDevices,
 		})
 	}
 	return result

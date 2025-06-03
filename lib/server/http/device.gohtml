@@ -6,7 +6,7 @@
         <div style="display: flex; flex-direction: column; align-items: flex-end">
             <label>
                 <span>add to schedule</span>
-            <input name="device[{{.ID}}][include]" type="checkbox" value="true">
+            <input name="device[{{.ID}}][include]" type="checkbox" {{.Checked}} }>
             </label>
             <input type="hidden" name="device[{{.ID}}][id]" value="{{.ID}}">
             <label class="label-fullwidth">

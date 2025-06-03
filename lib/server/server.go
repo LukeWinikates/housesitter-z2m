@@ -37,9 +37,7 @@ func (r *realServer) Start() error {
 			case device := <-deviceChan:
 				if device.Definition != nil && strings.Contains(device.Definition.Description, "bulb") {
 					fmt.Println(device.FriendlyName)
-					savedDevice := &database.Device{}
-					r.database.Find(savedDevice, "ieee_address = ?", device.IEEEAddress)
-					if savedDevice == nil {
+					if r.database.Find(&database.Device{}, "ieee_address = ?", device.IEEEAddress).RowsAffected == 0 {
 						fmt.Printf("found new device: %s\n", device.FriendlyName)
 						r.database.Create(&database.Device{
 							FriendlyName: device.FriendlyName,
@@ -54,7 +52,9 @@ func (r *realServer) Start() error {
 		}
 	}()
 
-	r.hapServer.Start()
+	if r.options.Homekit {
+		r.hapServer.Start()
+	}
 
 	runtime.NewRunner(store, r.ztmClient).Start()
 	return r.httpServer.Serve(r.options.Hostname)
@@ -67,6 +67,7 @@ func (r *realServer) Stop() error {
 type Options struct {
 	DataDir  string
 	Hostname string
+	Homekit  bool
 }
 
 func New(db *gorm.DB, client zigbee2mqtt.Client, opts Options) (Server, error) {

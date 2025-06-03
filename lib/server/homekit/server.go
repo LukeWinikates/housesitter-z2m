@@ -13,12 +13,13 @@ import (
 type Server interface {
 	Start()
 }
+
 type s struct {
 	hap *hap.Server
 }
 
 func (s s) Start() {
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 2)
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, syscall.SIGTERM)
 
@@ -39,7 +40,7 @@ func NewServer() (Server, error) {
 	fs := hap.NewFsStore("tmp/hapdb")
 	onOffSwitch := accessory.NewSwitch(accessory.Info{Name: "Rusuban Mode"})
 	onOffSwitch.Switch.On.OnValueRemoteUpdate(func(on bool) {
-		if on == true {
+		if on {
 			log.Println("Switch is on")
 		} else {
 			log.Println("Switch is off")

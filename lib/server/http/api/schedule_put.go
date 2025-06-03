@@ -2,12 +2,14 @@ package api
 
 import (
 	"LukeWinikates/january-twenty-five/lib/database"
+	"LukeWinikates/january-twenty-five/lib/database/queries"
 	"encoding/json"
 	"fmt"
+	"gorm.io/gorm"
 	"net/http"
 )
 
-func SchedulePUTHandler(scheduleStore database.Store) func(writer http.ResponseWriter, request *http.Request) {
+func SchedulePUTHandler(scheduleStore database.Store, db *gorm.DB) func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		idFromPath := request.PathValue("schedule_id")
 		fmt.Println(idFromPath)
@@ -20,12 +22,6 @@ func SchedulePUTHandler(scheduleStore database.Store) func(writer http.ResponseW
 			return
 			// general error handler / logger
 		}
-		if idFromPath != requestBody.Id {
-			fmt.Println(err)
-			fmt.Println("consistency issue...")
-			writer.WriteHeader(500)
-			return
-		}
 
 		s, err := scheduleStore.Find(idFromPath)
 		if err != nil {
@@ -33,7 +29,14 @@ func SchedulePUTHandler(scheduleStore database.Store) func(writer http.ResponseW
 			return
 		}
 
-		//err = requestBody.Apply(s)
+		template, err := requestBody.ToScheduleCreateTemplate()
+		if err != nil {
+			writer.WriteHeader(500)
+			return
+		}
+
+		err = queries.UpdateSchedule(db, s, *template)
+
 		if err != nil {
 			writer.WriteHeader(500)
 			return

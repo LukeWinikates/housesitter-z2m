@@ -45,7 +45,7 @@ func (store *dbStore) FindScheduleDeviceSettings(scheduleId, deviceId string) (*
 
 func (store *dbStore) Find(id string) (*Schedule, error) {
 	s := &Schedule{}
-	result := store.database.Find(s, id)
+	result := store.database.Preload("DeviceSettings").Preload("DeviceSettings.Device").Find(s, "id = ?", id)
 	return s, result.Error
 }
 
