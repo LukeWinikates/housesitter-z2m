@@ -36,7 +36,7 @@ func createServer() (server.Server, error) {
 	options := createServerOptions()
 	db, err := gorm.Open(sqlite.Open(options.DataDir+"/test.db"), &gorm.Config{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect database")
+		return nil, fmt.Errorf("failed to connect database: %s", err.Error())
 	}
 	s, err := server.New(db, client, options)
 	return s, err
