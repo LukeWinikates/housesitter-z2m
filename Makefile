@@ -2,7 +2,7 @@
 
 build/housesitter-z2m-linux-amd64: $(shell find . -iname "*.go")
 	mkdir -p build/
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+	GOOS=linux GOARCH=amd64 \
 		go build  -o $@ cmd/main.go
 
 test:
