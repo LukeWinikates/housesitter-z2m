@@ -34,7 +34,7 @@ func main() {
 func createServer() (server.Server, error) {
 	client := zigbee2mqtt.NewClient(os.Getenv("MQTT_HOST"))
 	options := createServerOptions()
-	db, err := gorm.Open(sqlite.Open("tmp/test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(options.DataDir+"/test.db"), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect database")
 	}
