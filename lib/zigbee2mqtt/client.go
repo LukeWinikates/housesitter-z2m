@@ -70,10 +70,10 @@ func (c *RealClient) SetDeviceState(deviceName string, message devices.LightCont
 	return nil
 }
 
-func NewClient(mqttHost string) Client {
+func NewClient(mqttHost, clientID string) Client {
 	options := mqtt.NewClientOptions()
 	options.AddBroker(mqttHost)
-	options.SetClientID("hogepiyo")
+	options.SetClientID(clientID)
 	client := mqtt.NewClient(options)
 
 	options.OnConnect = connectHandler
