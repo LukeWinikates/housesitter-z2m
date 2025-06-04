@@ -5,18 +5,11 @@ import (
 )
 
 type DeviceStore interface {
-	Find(id string) (*Device, error)
 	All() []*Device
 }
 
 type dbDeviceStore struct {
 	database *gorm.DB
-}
-
-func (d *dbDeviceStore) Find(id string) (*Device, error) {
-	device := &Device{}
-	result := d.database.Find(device, "id = ?", id)
-	return device, result.Error
 }
 
 func (d *dbDeviceStore) All() []*Device {

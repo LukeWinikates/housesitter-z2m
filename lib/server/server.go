@@ -27,18 +27,17 @@ type realServer struct {
 }
 
 func (r *realServer) Start() error {
-	store, err := database.NewDBStore(r.database, false)
+	store, err := database.NewDBStore(r.database)
 	if err != nil {
 		return err
 	}
 	deviceChan, errChan := r.ztmClient.DeviceUpdates()
 	go func() {
-		fmt.Println("got here")
 		for {
 			fmt.Println("waiting for device message")
 			select {
 			case device := <-deviceChan:
-				fmt.Println("device message")
+				fmt.Println("received device message")
 				if device.Definition != nil && strings.Contains(device.Definition.Description, "bulb") {
 					fmt.Println(device.FriendlyName)
 					if r.database.Find(&database.Device{}, "ieee_address = ?", device.IEEEAddress).RowsAffected == 0 {

@@ -25,6 +25,7 @@ func main() {
 		sig := <-sigs
 		fmt.Printf("received signal: %s\n", sig.String())
 		fmt.Println(s.Stop())
+
 	}()
 
 	fmt.Println("starting server")

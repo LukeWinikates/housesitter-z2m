@@ -47,7 +47,7 @@ func (s *realServer) Serve(addr string) error {
 	mux := http.NewServeMux()
 	fs := os.DirFS("./public")
 	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.FS(fs))))
-	scheduleStore, err := database.NewDBStore(s.db, false)
+	scheduleStore, err := database.NewDBStore(s.db)
 	if err != nil {
 		return err
 	}
