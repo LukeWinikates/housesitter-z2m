@@ -15,6 +15,7 @@ import (
 
 const PUT_SCHEDULES_ROUTE_PATTERN = "PUT /api/schedules/{schedule_id}"
 const POST_SCHEDULES_ROUTE_PATTERN = "POST /api/schedules/"
+const DELETE_SCHEDULES_ROUTE_PATTERN = "DELETE /api/schedules/{schedule_id}"
 
 var homepageTemplate *template.Template
 
@@ -54,6 +55,7 @@ func (s *realServer) Serve(addr string) error {
 	mux.HandleFunc("/", indexPage(scheduleStore, deviceStore))
 	mux.HandleFunc(PUT_SCHEDULES_ROUTE_PATTERN, api.SchedulePUTHandler(scheduleStore, s.db))
 	mux.HandleFunc(POST_SCHEDULES_ROUTE_PATTERN, api.SchedulePOSTHandler(s.db))
+	mux.HandleFunc(DELETE_SCHEDULES_ROUTE_PATTERN, api.ScheduleDELETEHandler(scheduleStore, s.db))
 	server := &http.Server{Addr: addr, Handler: mux}
 	s.server = server
 	return server.ListenAndServe()

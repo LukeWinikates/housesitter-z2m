@@ -62,6 +62,19 @@
           location.reload()
         })
       }
+
+      function destroySchedule(id, name, event) {
+        event.preventDefault();
+        if(!window.confirm(`delete the schedule '${name}'?`)) {
+          return
+        }
+        const url = `/api/schedules/${id}`
+        fetch(url, {
+          method: "DELETE",
+        }).then(() => {
+          location.reload()
+        })
+      }
     </script>
 </head>
 <body>
@@ -116,6 +129,7 @@
             <header>
                 <h2>{{.FriendlyName}}</h2>
                 <sub>schedule</sub>
+                <button onclick="destroySchedule('{{.ID}}', '{{.FriendlyName}}', event)">Delete</button>
             </header>
             <article>
                 <form onsubmit="updateSchedule(this, event)" >
