@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -33,24 +34,32 @@ func main() {
 
 func createServer() (server.Server, error) {
 	client := zigbee2mqtt.NewClient(os.Getenv("MQTT_HOST"), os.Getenv("MQTT_CLIENT_ID"))
-	options := createServerOptions()
+	options, err := createServerOptions()
+	if err != nil {
+		return nil, fmt.Errorf("failed to set up with configuration: %s", err.Error())
+	}
 	db, err := gorm.Open(sqlite.Open(options.DataDir+"/test.db"), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect database: %s", err.Error())
 	}
-	s, err := server.New(db, client, options)
+	s, err := server.New(db, client, *options)
 	return s, err
 }
 
-func createServerOptions() server.Options {
+func createServerOptions() (*server.Options, error) {
 	dataPath := os.Getenv("DATA_PATH")
 	hostname := os.Getenv("HOUSESITTER_HOST")
 	if hostname == "" {
 		hostname = "localhost:8998"
 	}
-	options := server.Options{
+	location, err := time.LoadLocation(os.Getenv("HOUSESITTER_TIME_ZONE"))
+	if err != nil {
+		return nil, err
+	}
+	options := &server.Options{
 		DataDir:  dataPath,
 		Hostname: hostname,
+		Location: location,
 	}
-	return options
+	return options, nil
 }

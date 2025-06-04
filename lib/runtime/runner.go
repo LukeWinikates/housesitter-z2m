@@ -4,7 +4,6 @@ import (
 	"LukeWinikates/january-twenty-five/lib/database"
 	"LukeWinikates/january-twenty-five/lib/database/queries"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
-	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt/devices"
 	"fmt"
 	"time"
 )
@@ -14,6 +13,7 @@ type runner struct {
 	lastRun   time.Time
 	store     database.Store
 	z2mClient zigbee2mqtt.Client
+	location  *time.Location
 }
 
 func (r *runner) Start() {
@@ -34,13 +34,10 @@ func (r *runner) scheduleEventsForNextInterval(end time.Time) {
 	transitions := queries.NewTransitionsInWindowQuery(r.store).Find(r.lastRun, end)
 	fmt.Printf("found %v transitions\n", len(transitions))
 	for _, t := range transitions {
-		timer := time.NewTimer(time.Until(t.Time.Today()))
+		timer := time.NewTimer(time.Until(t.Time.Today(r.location)))
 		go func() {
 			<-timer.C
-			msg := devices.OffMessage()
-			if t.On {
-				msg = devices.OnMessage()
-			}
+			msg := t.Message
 
 			fmt.Printf("sending message for %s\n", t.Device.FriendlyName)
 			err := r.z2mClient.SetDeviceState(t.Device.IEEEAddress, msg)
@@ -56,10 +53,11 @@ type Runner interface {
 	Start()
 }
 
-func NewRunner(store database.Store, z2mClient zigbee2mqtt.Client) Runner {
+func NewRunner(store database.Store, z2mClient zigbee2mqtt.Client, location *time.Location) Runner {
 	return &runner{
 		interval:  30 * time.Second,
 		store:     store,
 		z2mClient: z2mClient,
+		location:  location,
 	}
 }

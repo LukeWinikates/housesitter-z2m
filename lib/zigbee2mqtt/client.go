@@ -38,8 +38,9 @@ func (c *RealClient) DeviceUpdates() (chan payloads.MessagePayload, chan error) 
 	payloadsChannel := make(chan payloads.MessagePayload)
 	errorsChannel := make(chan error)
 
+	fmt.Println("getting messages")
 	token := c.mqttClient.Subscribe(topic, 1, func(client mqtt.Client, message mqtt.Message) {
-		//fmt.Printf("Received message from topic: %s\n", message.Topic())
+		fmt.Printf("Received message from topic: %s\n", message.Topic())
 		deviceList, err := payloads.Parse(message.Payload())
 		if err != nil {
 			errorsChannel <- err
@@ -73,6 +74,7 @@ func (c *RealClient) SetDeviceState(deviceName string, message devices.LightCont
 func NewClient(mqttHost, clientID string) Client {
 	options := mqtt.NewClientOptions()
 	options.AddBroker(mqttHost)
+	fmt.Printf("client id: %s\n", clientID)
 	options.SetClientID(clientID)
 	client := mqtt.NewClient(options)
 

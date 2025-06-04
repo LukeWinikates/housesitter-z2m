@@ -3,6 +3,7 @@ package queries
 import (
 	"LukeWinikates/january-twenty-five/lib/database"
 	"LukeWinikates/january-twenty-five/lib/timeofday"
+	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt/devices"
 	"time"
 )
 
@@ -18,9 +19,9 @@ func NewTransitionsInWindowQuery(store database.Store) *TransitionsInWindowQuery
 }
 
 type Transition struct {
-	On     bool
-	Device *database.Device
-	Time   timeofday.SecondsInDay
+	Device  *database.Device
+	Time    timeofday.SecondsInDay
+	Message devices.LightControl
 }
 
 func (q *TransitionsInWindowQuery) Find(start, end time.Time) []Transition {
@@ -35,18 +36,18 @@ func (q *TransitionsInWindowQuery) Find(start, end time.Time) []Transition {
 		if between(startSecondsInDay, endSecondsInDay, s.OnTime) {
 			for _, d := range s.DeviceSettings {
 				result = append(result, Transition{
-					On:     true,
-					Device: d.Device,
-					Time:   s.OnTime,
+					Message: devices.OnMessage(int(d.Brightness)),
+					Device:  d.Device,
+					Time:    s.OnTime,
 				})
 			}
 		}
 		if between(startSecondsInDay, endSecondsInDay, s.OffTime) {
 			for _, d := range s.DeviceSettings {
 				result = append(result, Transition{
-					On:     false,
-					Device: d.Device,
-					Time:   s.OffTime,
+					Message: devices.OffMessage(),
+					Device:  d.Device,
+					Time:    s.OffTime,
 				})
 			}
 		}

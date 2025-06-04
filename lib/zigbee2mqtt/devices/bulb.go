@@ -21,9 +21,9 @@ type LightControl struct {
 	UpdateAvailable bool        `json:"update_available"`
 }
 
-func OnMessage() LightControl {
+func OnMessage(brightness int) LightControl {
 	return LightControl{
-		Brightness: 254,
+		Brightness: brightness,
 		ColorMode:  "color_temp",
 		ColorTemp:  370,
 		LevelConfig: LevelConfig{

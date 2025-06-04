@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"strings"
+	"time"
 )
 
 type Server interface {
@@ -32,9 +33,12 @@ func (r *realServer) Start() error {
 	}
 	deviceChan, errChan := r.ztmClient.DeviceUpdates()
 	go func() {
+		fmt.Println("got here")
 		for {
+			fmt.Println("waiting for device message")
 			select {
 			case device := <-deviceChan:
+				fmt.Println("device message")
 				if device.Definition != nil && strings.Contains(device.Definition.Description, "bulb") {
 					fmt.Println(device.FriendlyName)
 					if r.database.Find(&database.Device{}, "ieee_address = ?", device.IEEEAddress).RowsAffected == 0 {
@@ -56,7 +60,7 @@ func (r *realServer) Start() error {
 		r.hapServer.Start()
 	}
 
-	runtime.NewRunner(store, r.ztmClient).Start()
+	runtime.NewRunner(store, r.ztmClient, r.options.Location).Start()
 	return r.httpServer.Serve(r.options.Hostname)
 }
 
@@ -68,6 +72,7 @@ type Options struct {
 	DataDir  string
 	Hostname string
 	Homekit  bool
+	Location *time.Location
 }
 
 func New(db *gorm.DB, client zigbee2mqtt.Client, opts Options) (Server, error) {
