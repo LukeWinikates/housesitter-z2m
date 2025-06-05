@@ -62,13 +62,14 @@ type Legend struct {
 }
 
 type ViewGrid struct {
-	Schedules   []GridSchedule
-	Legends     []Legend
-	GridClasses string
-	AllDevices  []GridDevice
+	Schedules       []GridSchedule
+	Legends         []Legend
+	GridClasses     string
+	AllDevices      []GridDevice
+	IsRunnerRunning bool
 }
 
-func Grid(list []*database.Schedule, allDevices []*database.Device) ViewGrid {
+func Grid(list []*database.Schedule, allDevices []*database.Device, isRunnerRunning bool) ViewGrid {
 
 	var legends = make([]Legend, 48)
 
@@ -89,10 +90,11 @@ func Grid(list []*database.Schedule, allDevices []*database.Device) ViewGrid {
 	}
 	allGridDevices := toDeviceList(allDevices)
 	return ViewGrid{
-		Schedules:   displaySchedules(list, allGridDevices),
-		AllDevices:  allGridDevices,
-		Legends:     legends,
-		GridClasses: "",
+		Schedules:       displaySchedules(list, allGridDevices),
+		AllDevices:      allGridDevices,
+		Legends:         legends,
+		GridClasses:     "",
+		IsRunnerRunning: isRunnerRunning,
 	}
 }
 

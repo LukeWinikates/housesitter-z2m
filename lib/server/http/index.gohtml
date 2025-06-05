@@ -75,6 +75,30 @@
           location.reload()
         })
       }
+
+      function pauseRunner(event) {
+        event.preventDefault()
+        postRunnerState(false)
+      }
+
+      function postRunnerState(shouldRun) {
+        fetch("/api/runner", {
+          method: "POST",
+          body: JSON.stringify({
+            run: shouldRun
+          })
+        }).then(() => {
+          location.reload()
+        })
+      }
+
+      function resumeRunner(event) {
+        event.preventDefault()
+
+        postRunnerState(true);
+      }
+
+
     </script>
 </head>
 <body>
@@ -83,6 +107,19 @@
     <h1>
         Housesitter
     </h1>
+    <aside>
+        {{ if .IsRunnerRunning }}
+            Running
+                <label>
+                    <button onclick="pauseRunner(event)">Pause</button>
+                </label>
+        {{ else }}
+            Not Running
+            <label>
+                <button onclick="resumeRunner(event)">Run Schedule</button>
+            </label>
+        {{ end }}
+    </aside>
 </header>
 
 <datalist id="markers">

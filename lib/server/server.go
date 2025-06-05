@@ -24,13 +24,10 @@ type realServer struct {
 	options    Options
 	database   *gorm.DB
 	hapServer  homekit.Server
+	runner     runtime.Runner
 }
 
 func (r *realServer) Start() error {
-	store, err := database.NewDBStore(r.database)
-	if err != nil {
-		return err
-	}
 	deviceChan, errChan := r.ztmClient.DeviceUpdates()
 	go func() {
 		for {
@@ -59,7 +56,7 @@ func (r *realServer) Start() error {
 		r.hapServer.Start()
 	}
 
-	runtime.NewRunner(store, r.ztmClient, r.options.Location).Start()
+	r.runner.Start()
 	return r.httpServer.Serve(r.options.Hostname)
 }
 
@@ -79,11 +76,15 @@ func New(db *gorm.DB, client zigbee2mqtt.Client, opts Options) (Server, error) {
 	if err != nil {
 		return nil, err
 	}
+	store := database.NewDBStore(db)
+
+	runner := runtime.NewRunner(store, client, opts.Location)
 	return &realServer{
 		database:   db,
 		ztmClient:  client,
 		options:    opts,
-		httpServer: http.NewServer(db),
+		httpServer: http.NewServer(db, runner),
 		hapServer:  hapServer,
+		runner:     runner,
 	}, nil
 }

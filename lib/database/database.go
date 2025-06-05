@@ -24,8 +24,8 @@ func (store *dbStore) SaveChanges(id string, s *Schedule) error {
 	return store.database.Save(s).Error
 }
 
-func NewDBStore(db *gorm.DB) (Store, error) {
+func NewDBStore(db *gorm.DB) Store {
 	return &dbStore{
 		database: db,
-	}, nil
+	}
 }
