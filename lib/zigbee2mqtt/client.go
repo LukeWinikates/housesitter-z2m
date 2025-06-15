@@ -25,7 +25,7 @@ var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err
 }
 
 type Client interface {
-	SetDeviceState(getenv string, message devices.LightControl) error
+	SetDeviceState(deviceName string, message devices.LightControl) error
 	DeviceUpdates() (chan payloads.MessagePayload, chan error)
 }
 

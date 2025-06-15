@@ -11,50 +11,25 @@ type LevelConfig struct {
 }
 
 type LightControl struct {
-	Brightness      int         `json:"brightness"`
-	ColorMode       string      `json:"color_mode"`
-	ColorTemp       int         `json:"color_temp"`
-	LevelConfig     LevelConfig `json:"level_config"`
-	LinkQuality     int         `json:"linkquality"`
-	State           string      `json:"state"`
-	Update          Update      `json:"update"`
-	UpdateAvailable bool        `json:"update_available"`
+	Brightness      *int         `json:"brightness,omitempty"`
+	ColorMode       string      `json:"color_mode,omitempty"`
+	ColorTemp       int         `json:"color_temp,omitempty"`
+	LevelConfig     LevelConfig `json:"level_config,omitempty"`
+	LinkQuality     int         `json:"linkquality,omitempty"`
+	State           string      `json:"state,omitempty"`
+	Update          Update      `json:"update,omitempty"`
+	UpdateAvailable bool        `json:"update_available,omitempty"`
 }
 
 func OnMessage(brightness int) LightControl {
 	return LightControl{
-		Brightness: brightness,
-		ColorMode:  "color_temp",
-		ColorTemp:  370,
-		LevelConfig: LevelConfig{
-			OnLevel: "previous",
-		},
-		LinkQuality: 36,
+		Brightness: &brightness,
 		State:       "ON",
-		Update: Update{
-			InstalledVersion: 65554,
-			LatestVersion:    65554,
-			State:            "idle",
-		},
-		UpdateAvailable: false,
 	}
 }
 
 func OffMessage() LightControl {
 	return LightControl{
-		Brightness: 0,
-		ColorMode:  "color_temp",
-		ColorTemp:  370,
-		LevelConfig: LevelConfig{
-			OnLevel: "previous",
-		},
-		LinkQuality: 36,
 		State:       "OFF",
-		Update: Update{
-			InstalledVersion: 65554,
-			LatestVersion:    65554,
-			State:            "idle",
-		},
-		UpdateAvailable: false,
 	}
 }

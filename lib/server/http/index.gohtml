@@ -20,7 +20,9 @@
       function requestPayloadFromForm(form) {
         const formData = new FormData(form);
         const {name, offtime, ontime, ...newScheduleValues} = Object.fromEntries(formData)
+        // const daysOfWeek = []
 
+        console.log(newScheduleValues)
         const devices = Object.values(
           Object.entries(newScheduleValues)
             .filter(e => e[0].startsWith("device"))
@@ -59,13 +61,13 @@
           method: "PUT",
           body: JSON.stringify(requestPayloadFromForm(form))
         }).then(() => {
-          location.reload()
+          // location.reload()
         })
       }
 
       function destroySchedule(id, name, event) {
         event.preventDefault();
-        if(!window.confirm(`delete the schedule '${name}'?`)) {
+        if (!window.confirm(`delete the schedule '${name}'?`)) {
           return
         }
         const url = `/api/schedules/${id}`
@@ -110,9 +112,9 @@
     <aside>
         {{ if .IsRunnerRunning }}
             Running
-                <label>
-                    <button onclick="pauseRunner(event)">Pause</button>
-                </label>
+            <label>
+                <button onclick="pauseRunner(event)">Pause</button>
+            </label>
         {{ else }}
             Not Running
             <label>
@@ -169,7 +171,7 @@
                 <button onclick="destroySchedule('{{.ID}}', '{{.FriendlyName}}', event)">Delete</button>
             </header>
             <article>
-                <form onsubmit="updateSchedule(this, event)" >
+                <form onsubmit="updateSchedule(this, event)" autocomplete="off">
                     <section class="form-oneline">
                         <input type="hidden" name="id" value="{{.ID}}">
                         <input type="hidden" name="name" value="{{.FriendlyName}}">
@@ -180,6 +182,39 @@
                             <input type="time" step="60" name="offtime" value="{{.OffTime.HTMLValue}}">
                         </label>
                         <button class="chamfer" type="submit">Update</button>
+                    </section>
+                    <section>
+                        <header>Active Days Of Week</header>
+                        <section style="display: flex; flex-direction: row">
+                            <label style="display: flex;flex-direction: column;padding: 5px;">
+                                SUN
+                                <input type="checkbox" name="SUN">
+                            </label>
+                            <label style="display: flex;flex-direction: column;padding: 5px;">
+                                MON
+                                <input type="checkbox" name="MON">
+                            </label>
+                            <label style="display: flex;flex-direction: column;padding: 5px;">
+                                TUE
+                                <input type="checkbox" name="TUE">
+                            </label>
+                            <label style="display: flex;flex-direction: column;padding: 5px;">
+                                WED
+                                <input type="checkbox" name="WED">
+                            </label>
+                            <label style="display: flex;flex-direction: column;padding: 5px;">
+                                THU
+                                <input type="checkbox" name="THU">
+                            </label>
+                            <label style="display: flex;flex-direction: column;padding: 5px;">
+                                FRI
+                                <input type="checkbox" name="FRI">
+                            </label>
+                            <label style="display: flex;flex-direction: column;padding: 5px;">
+                                SAT
+                                <input type="checkbox" name="SAT">
+                            </label>
+                        </section>
                     </section>
                     <section>
                         <header>
@@ -208,7 +243,7 @@
         </section>
     {{ end }}
     <section class="card" id="schedule-new">
-        <form onsubmit="createSchedule(this, event)">
+        <form onsubmit="createSchedule(this, event)" autocomplete="off">
             <header>
                 <h2>New Schedule</h2>
                 <sub>schedule</sub>
@@ -225,6 +260,19 @@
                         <input type="time" step="60" name="offtime" value="14:00">
                     </label>
                     <button type="submit" class="chamfer">Create</button>
+                </section>
+                <section>
+                    <label>Active Days Of Week
+                        <select name="daysOfWeek" multiple size="7">
+                            <option value="SUN">Sunday</option>
+                            <option value="MON">Monday</option>
+                            <option value="TUE">Tuesday</option>
+                            <option value="WED">Wednesday</option>
+                            <option value="THU">Thursday</option>
+                            <option value="FRI">Friday</option>
+                            <option value="SAT">Saturday</option>
+                        </select>
+                    </label>
                 </section>
                 <section>
                     <article class="flex">

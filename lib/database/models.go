@@ -9,8 +9,9 @@ type HexColor = string
 
 type Schedule struct {
 	gorm.Model
-	OnTime         timeofday.SecondsInDay
-	OffTime        timeofday.SecondsInDay
+	OnTime  timeofday.SecondsInDay
+	OffTime timeofday.SecondsInDay
+	//DaysOfWeek     string
 	DeviceSettings []*DeviceSetting
 	FriendlyName   string
 	ID             string `gorm:"primaryKey"`
