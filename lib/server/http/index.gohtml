@@ -173,6 +173,12 @@
                     <section class="form-oneline">
                         <input type="hidden" name="id" value="{{.ID}}">
                         <input type="hidden" name="name" value="{{.FriendlyName}}">
+                        <label>
+                            <span>Days Of Week</span>
+                            {{ range .DaysOfWeek }}
+                                <input type="checkbox"> {{ . }}
+                            {{ end }}
+                        </label>
                         <label>On Time
                             <input type="time" name="ontime" step="60" value="{{.OnTime.HTMLValue}}">
                         </label>
@@ -217,6 +223,12 @@
                 <section class="form-oneline">
                     <label>Name
                         <input type="text" name="name"></h2>
+                    </label>
+                    <label>
+                        <span>Days Of Week</span>
+                        {{ range .DaysOfWeek }}
+                            <input type="checkbox"> {{ . }}
+                        {{ end }}
                     </label>
                     <label>On Time
                         <input type="time" name="ontime" step="60" value="09:00">

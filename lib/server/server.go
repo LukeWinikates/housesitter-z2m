@@ -7,10 +7,11 @@ import (
 	"LukeWinikates/january-twenty-five/lib/server/http"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
 	"fmt"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Server interface {
@@ -61,6 +62,8 @@ func (r *realServer) Start() error {
 }
 
 func (r *realServer) Stop() error {
+	r.runner.Stop()
+	r.hapServer.Stop()
 	return nil
 }
 

@@ -24,6 +24,7 @@ type Transition struct {
 	Message devices.LightControl
 }
 
+// , day DayOfWeek)
 func (q *TransitionsInWindowQuery) Find(start, end time.Time) []Transition {
 	schedules := q.store.All()
 
@@ -33,6 +34,7 @@ func (q *TransitionsInWindowQuery) Find(start, end time.Time) []Transition {
 	var result []Transition
 
 	for _, s := range schedules {
+		// if it doesn't have the current day of the week, skip it
 		if between(startSecondsInDay, endSecondsInDay, s.OnTime) {
 			for _, d := range s.DeviceSettings {
 				result = append(result, Transition{

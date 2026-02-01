@@ -2,20 +2,23 @@ package homekit
 
 import (
 	"context"
-	"github.com/brutella/hap"
-	"github.com/brutella/hap/accessory"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/brutella/hap"
+	"github.com/brutella/hap/accessory"
 )
 
 type Server interface {
 	Start()
+	Stop()
 }
 
 type s struct {
-	hap *hap.Server
+	hap    *hap.Server
+	cancel context.CancelFunc
 }
 
 func (s s) Start() {
@@ -24,6 +27,7 @@ func (s s) Start() {
 	signal.Notify(c, syscall.SIGTERM)
 
 	ctx, cancel := context.WithCancel(context.Background())
+	s.cancel = cancel
 	go func() {
 		<-c
 		// Stop delivering signals.
@@ -34,6 +38,10 @@ func (s s) Start() {
 	go func() {
 		log.Default().Println(s.hap.ListenAndServe(ctx).Error())
 	}()
+}
+
+func (s s) Stop() {
+	s.cancel()
 }
 
 func NewServer() (Server, error) {

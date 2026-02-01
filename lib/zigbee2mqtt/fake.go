@@ -9,11 +9,7 @@ type noOpClient struct {
 }
 
 func (n noOpClient) DeviceUpdates() (chan payloads.MessagePayload, chan error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (n noOpClient) SubscribeDeviceCatalog(_ func(devices []payloads.MessagePayload)) {
+	return make(chan payloads.MessagePayload), make(chan error)
 }
 
 func (n noOpClient) SetDeviceState(_ string, _ devices.LightControl) error {

@@ -2,6 +2,7 @@ package database
 
 import (
 	"LukeWinikates/january-twenty-five/lib/timeofday"
+
 	"gorm.io/gorm"
 )
 
@@ -9,8 +10,9 @@ type HexColor = string
 
 type Schedule struct {
 	gorm.Model
-	OnTime         timeofday.SecondsInDay
-	OffTime        timeofday.SecondsInDay
+	OnTime  timeofday.SecondsInDay
+	OffTime timeofday.SecondsInDay
+	// days of week here
 	DeviceSettings []*DeviceSetting
 	FriendlyName   string
 	ID             string `gorm:"primaryKey"`

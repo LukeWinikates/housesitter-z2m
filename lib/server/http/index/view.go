@@ -15,6 +15,7 @@ type GridSchedule struct {
 	Row              int
 	ID               string
 	AvailableDevices []GridDeviceSettings
+	DaysOfWeek       []string
 }
 
 type GridDeviceSettings struct {
@@ -67,6 +68,7 @@ type ViewGrid struct {
 	GridClasses     string
 	AllDevices      []GridDevice
 	IsRunnerRunning bool
+	DaysOfWeek      []string
 }
 
 func Grid(list []*database.Schedule, allDevices []*database.Device, isRunnerRunning bool) ViewGrid {
@@ -92,6 +94,7 @@ func Grid(list []*database.Schedule, allDevices []*database.Device, isRunnerRunn
 	return ViewGrid{
 		Schedules:       displaySchedules(list, allGridDevices),
 		AllDevices:      allGridDevices,
+		DaysOfWeek:      []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"},
 		Legends:         legends,
 		GridClasses:     "",
 		IsRunnerRunning: isRunnerRunning,
@@ -156,6 +159,7 @@ func displaySchedules(schedules []*database.Schedule, allDevices []GridDevice) [
 			ID:               s.ID,
 			OnTime:           s.OnTime,
 			OffTime:          s.OffTime,
+			DaysOfWeek:       []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"},
 			FriendlyName:     s.FriendlyName,
 			Row:              i + 1,
 			Devices:          settings,

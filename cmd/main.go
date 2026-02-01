@@ -1,20 +1,27 @@
 package main
 
 import (
+	"LukeWinikates/january-twenty-five/lib/database"
 	"LukeWinikates/january-twenty-five/lib/server"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
 	"fmt"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func main() {
-	s, err := createServer()
+	mqttHost := os.Getenv("MQTT_HOST")
+	clientID := os.Getenv("MQTT_CLIENT_ID")
+	//if mqttHost == "" || clientID == "" {
+	//	log.Fatal("missing required MQTT_HOST or MQTT_CLIENT_ID environment variables")
+	//}
+	s, err := createServer(mqttHost, clientID)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -25,7 +32,6 @@ func main() {
 		sig := <-sigs
 		fmt.Printf("received signal: %s\n", sig.String())
 		fmt.Println(s.Stop())
-
 	}()
 
 	fmt.Println("starting server")
@@ -33,13 +39,14 @@ func main() {
 
 }
 
-func createServer() (server.Server, error) {
-	client := zigbee2mqtt.NewClient(os.Getenv("MQTT_HOST"), os.Getenv("MQTT_CLIENT_ID"))
+func createServer(mqttHost, mqttClientID string) (server.Server, error) {
+	client := zigbee2mqtt.NoOpClient()
 	options, err := createServerOptions()
 	if err != nil {
 		return nil, fmt.Errorf("failed to set up with configuration: %s", err.Error())
 	}
 	db, err := gorm.Open(sqlite.Open(options.DataDir+"/test.db"), &gorm.Config{})
+	database.AutoMigrate(db)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect database: %s", err.Error())
 	}

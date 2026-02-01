@@ -29,3 +29,7 @@ func NewDBStore(db *gorm.DB) Store {
 		database: db,
 	}
 }
+
+func AutoMigrate(db *gorm.DB) {
+	db.AutoMigrate(&Schedule{}, &DeviceSetting{}, &Device{}, &Settings{})
+}
