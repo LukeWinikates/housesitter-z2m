@@ -65,7 +65,7 @@
 
       function destroySchedule(id, name, event) {
         event.preventDefault();
-        if(!window.confirm(`delete the schedule '${name}'?`)) {
+        if (!window.confirm(`delete the schedule '${name}'?`)) {
           return
         }
         const url = `/api/schedules/${id}`
@@ -110,9 +110,9 @@
     <aside>
         {{ if .IsRunnerRunning }}
             Running
-                <label>
-                    <button onclick="pauseRunner(event)">Pause</button>
-                </label>
+            <label>
+                <button onclick="pauseRunner(event)">Pause</button>
+            </label>
         {{ else }}
             Not Running
             <label>
@@ -169,7 +169,7 @@
                 <button onclick="destroySchedule('{{.ID}}', '{{.FriendlyName}}', event)">Delete</button>
             </header>
             <article>
-                <form onsubmit="updateSchedule(this, event)" >
+                <form onsubmit="updateSchedule(this, event)">
                     <section class="form-oneline">
                         <input type="hidden" name="id" value="{{.ID}}">
                         <input type="hidden" name="name" value="{{.FriendlyName}}">
