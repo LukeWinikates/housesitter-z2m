@@ -1,26 +1,17 @@
 package timeofday
 
 import (
-	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestName(t *testing.T) {
-	time := 10*Hour + 30*Minute + PM
-
-	if time.HumanReadable() != "10:30 pm" {
-		fmt.Println(time.HumanReadable())
-		t.Fail()
-	}
-
-	time = 12*Hour + PM
-
-	if time.HumanReadable() != "12:00 pm" {
-		fmt.Println(time.HumanReadable())
-		t.Fail()
-	}
+func TestHumanReadable(t *testing.T) {
+	assert.Equal(t, "10:30 pm", (10*Hour + 30*Minute + PM).HumanReadable())
+	assert.Equal(t, "12:00 pm", (12 * Hour).HumanReadable())
+	assert.Equal(t, "10:30 am (next day)", (10*Hour + 30*Minute + NEXT_DAY).HumanReadable())
+	assert.Equal(t, "10:30 pm (next day)", (10*Hour + 30*Minute + PM + NEXT_DAY).HumanReadable())
 }
 
 func TestTimeToSecondsInDay(t *testing.T) {

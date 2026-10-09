@@ -9,6 +9,7 @@ const Second SecondsInDay = 1
 const Minute = 60 * Second
 const Hour = 60 * Minute
 const PM = 12 * Hour
+const NEXT_DAY = 24 * Hour
 
 type SecondsInDay int
 
@@ -17,7 +18,7 @@ func NewSecondsInDay(hour, minute, ampm SecondsInDay) SecondsInDay {
 }
 
 func (s SecondsInDay) HumanReadable() string {
-	return fmt.Sprintf("%2d:%02d %s", s.Hour(), s.Minute(), s.AMPM())
+	return fmt.Sprintf("%2d:%02d %s%s", s.Hour(), s.Minute(), s.AMPM(), s.DaysLater())
 }
 
 func (s SecondsInDay) Hour() int {
@@ -37,10 +38,17 @@ func (s SecondsInDay) HTMLValue() string {
 }
 
 func (s SecondsInDay) AMPM() string {
-	if s >= PM {
+	if s%NEXT_DAY >= PM {
 		return "pm"
 	}
 	return "am"
+}
+
+func (s SecondsInDay) DaysLater() string {
+	if s >= NEXT_DAY {
+		return " (next day)"
+	}
+	return ""
 }
 
 func ToFriendlyTime(seconds SecondsInDay) string {
@@ -60,6 +68,10 @@ func TimeToSecondsInDay(t time.Time) SecondsInDay {
 }
 
 func (s SecondsInDay) Today(location *time.Location) time.Time {
-	y, m, d := time.Now().Date()
+	return s.OnDay(location, time.Now())
+}
+
+func (s SecondsInDay) OnDay(location *time.Location, onDay time.Time) time.Time {
+	y, m, d := onDay.Date()
 	return time.Date(y, m, d, s.Hour(), s.Minute(), 0, 0, location)
 }

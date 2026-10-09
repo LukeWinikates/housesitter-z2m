@@ -53,11 +53,14 @@ func (r *realServer) Start() error {
 		}
 	}()
 
+	fmt.Println("starting hap server")
 	if r.options.Homekit {
 		r.hapServer.Start()
 	}
 
+	fmt.Printf("starting schedule runner")
 	r.runner.Start()
+	fmt.Printf("starting http server at %s\n", r.options.Hostname)
 	return r.httpServer.Serve(r.options.Hostname)
 }
 

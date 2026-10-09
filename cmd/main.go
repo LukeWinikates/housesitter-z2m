@@ -46,10 +46,10 @@ func createServer(mqttHost, mqttClientID string) (server.Server, error) {
 		return nil, fmt.Errorf("failed to set up with configuration: %s", err.Error())
 	}
 	db, err := gorm.Open(sqlite.Open(options.DataDir+"/test.db"), &gorm.Config{})
-	database.AutoMigrate(db)
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect database: %s", err.Error())
+		return nil, fmt.Errorf("failed to connect database (%s): %s", options.DataDir, err.Error())
 	}
+	database.AutoMigrate(db)
 	s, err := server.New(db, client, *options)
 	return s, err
 }

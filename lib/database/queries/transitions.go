@@ -28,23 +28,19 @@ type Transition struct {
 func (q *TransitionsInWindowQuery) Find(start, end time.Time) []Transition {
 	schedules := q.store.All()
 
-	startSecondsInDay := timeofday.TimeToSecondsInDay(start)
-	endSecondsInDay := timeofday.TimeToSecondsInDay(end)
-
 	var result []Transition
 
 	for _, s := range schedules {
-		// if it doesn't have the current day of the week, skip it
-		if between(startSecondsInDay, endSecondsInDay, s.OnTime) {
+		if nextOn := s.NextOnAfter(start); nextOn.Before(end) {
 			for _, d := range s.DeviceSettings {
 				result = append(result, Transition{
 					Message: devices.OnMessage(int(d.Brightness)),
 					Device:  d.Device,
-					Time:    s.OnTime,
+					Time:    timeofday.TimeToSecondsInDay(nextOn),
 				})
 			}
 		}
-		if between(startSecondsInDay, endSecondsInDay, s.OffTime) {
+		if nextOff := s.NextOffAfter(start); nextOff.Before(end) {
 			for _, d := range s.DeviceSettings {
 				result = append(result, Transition{
 					Message: devices.OffMessage(),
