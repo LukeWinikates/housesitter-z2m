@@ -5,6 +5,7 @@ import (
 	"LukeWinikates/january-twenty-five/lib/timeofday"
 	"fmt"
 	"html/template"
+	"time"
 )
 
 type GridSchedule struct {
@@ -15,7 +16,7 @@ type GridSchedule struct {
 	Row              int
 	ID               string
 	AvailableDevices []GridDeviceSettings
-	DaysOfWeek       []string
+	DaysOfWeek       []DayOfWeekCheckboxStates
 }
 
 type GridDeviceSettings struct {
@@ -68,7 +69,10 @@ type ViewGrid struct {
 	GridClasses     string
 	AllDevices      []GridDevice
 	IsRunnerRunning bool
-	DaysOfWeek      []string
+}
+
+func (g ViewGrid) CreateEmptyDaysOfWeek() []DayOfWeekCheckboxStates {
+	return daysOfWeekToCheckboxStates(&database.Schedule{})
 }
 
 func Grid(list []*database.Schedule, allDevices []*database.Device, isRunnerRunning bool) ViewGrid {
@@ -94,7 +98,6 @@ func Grid(list []*database.Schedule, allDevices []*database.Device, isRunnerRunn
 	return ViewGrid{
 		Schedules:       displaySchedules(list, allGridDevices),
 		AllDevices:      allGridDevices,
-		DaysOfWeek:      []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"},
 		Legends:         legends,
 		GridClasses:     "",
 		IsRunnerRunning: isRunnerRunning,
@@ -159,12 +162,44 @@ func displaySchedules(schedules []*database.Schedule, allDevices []GridDevice) [
 			ID:               s.ID,
 			OnTime:           s.OnTime,
 			OffTime:          s.OffTime,
-			DaysOfWeek:       []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"},
+			DaysOfWeek:       daysOfWeekToCheckboxStates(s),
 			FriendlyName:     s.FriendlyName,
 			Row:              i + 1,
 			Devices:          settings,
 			AvailableDevices: availableDevices,
 		})
+	}
+	return result
+}
+
+var intToDayOfWeek = map[int]string{
+	0: "Sunday",
+	1: "Monday",
+	2: "Tuesday",
+	3: "Wednesday",
+	4: "Thursday",
+	5: "Friday",
+	6: "Saturday",
+}
+
+type DayOfWeekCheckboxStates struct {
+	Name    string
+	Checked template.HTMLAttr
+}
+
+func daysOfWeekToCheckboxStates(s *database.Schedule) []DayOfWeekCheckboxStates {
+	var result []DayOfWeekCheckboxStates
+	for i := 0; i < 7; i++ {
+		checked := s.ActiveOnDayOfWeek(time.Weekday(i))
+		checkedAttr := template.HTMLAttr("")
+		if checked {
+			checkedAttr = "checked"
+		}
+		result = append(result, DayOfWeekCheckboxStates{
+			Name:    intToDayOfWeek[i],
+			Checked: checkedAttr,
+		})
+
 	}
 	return result
 }

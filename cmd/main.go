@@ -40,7 +40,8 @@ func main() {
 }
 
 func createServer(mqttHost, mqttClientID string) (server.Server, error) {
-	client := zigbee2mqtt.NoOpClient()
+	//client := zigbee2mqtt.NoOpClient()
+	client := zigbee2mqtt.NewClient(mqttHost, mqttClientID)
 	options, err := createServerOptions()
 	if err != nil {
 		return nil, fmt.Errorf("failed to set up with configuration: %s", err.Error())

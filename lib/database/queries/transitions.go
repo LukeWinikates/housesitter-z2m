@@ -53,7 +53,3 @@ func (q *TransitionsInWindowQuery) Find(start, end time.Time) []Transition {
 
 	return result
 }
-
-func between(startSecondsInDay, endSecondsInDay, transitionTime timeofday.SecondsInDay) bool {
-	return startSecondsInDay <= transitionTime && transitionTime <= endSecondsInDay
-}

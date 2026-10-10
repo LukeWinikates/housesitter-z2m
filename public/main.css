@@ -44,6 +44,10 @@ header h1 {
     align-content: center;
 }
 
+.label-inline {
+    display: inline;
+}
+
 .label:hover {
     background-color: lightcoral;
 }

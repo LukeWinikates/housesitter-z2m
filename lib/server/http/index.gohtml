@@ -19,6 +19,7 @@
 
       function requestPayloadFromForm(form) {
         const formData = new FormData(form);
+        const daysOfWeek = [...formData.entries().filter(([key, _]) => key === 'daysOfWeek').map(([_, value]) => value)];
         const {name, offtime, ontime, ...newScheduleValues} = Object.fromEntries(formData)
 
         const devices = Object.values(
@@ -36,7 +37,7 @@
           d.brightness = parseInt(d.brightness)
         }))
 
-        return {name, offtime, ontime, devices};
+        return {name, offtime, ontime, devices, daysOfWeek};
       }
 
       function createSchedule(form, event) {
@@ -53,8 +54,8 @@
       function updateSchedule(form, event) {
         event.preventDefault();
         const formData = new FormData(form);
-        const newScheduleValues = Object.fromEntries(formData)
-        const url = `/api/schedules/${newScheduleValues.id}`
+        const {id} = Object.fromEntries(formData)
+        const url = `/api/schedules/${id}`
         fetch(url, {
           method: "PUT",
           body: JSON.stringify(requestPayloadFromForm(form))
@@ -173,12 +174,16 @@
                     <section class="form-oneline">
                         <input type="hidden" name="id" value="{{.ID}}">
                         <input type="hidden" name="name" value="{{.FriendlyName}}">
-                        <label>
-                            <span>Days Of Week</span>
+                        <fieldset>
+                            <label>Days Of Week</label>
                             {{ range .DaysOfWeek }}
-                                <input type="checkbox"> {{ . }}
+                                <label>
+                                    <input type="checkbox" name="daysOfWeek" value="{{.Name}}" {{.Checked}}>
+                                    {{ .Name }}
+                                </label>
                             {{ end }}
-                        </label>
+
+                        </fieldset>
                         <label>On Time
                             <input type="time" name="ontime" step="60" value="{{.OnTime.HTMLValue}}">
                         </label>
@@ -224,21 +229,23 @@
                     <label>Name
                         <input type="text" name="name"></h2>
                     </label>
-                    <label>
-                        <span>Days Of Week</span>
-                        {{ range .DaysOfWeek }}
-                            <input type="checkbox"> {{ . }}
-                        {{ end }}
-                    </label>
                     <label>On Time
                         <input type="time" name="ontime" step="60" value="09:00">
                     </label>
                     <label>Off Time
                         <input type="time" step="60" name="offtime" value="14:00">
                     </label>
-                    <button type="submit" class="chamfer">Create</button>
                 </section>
-                <section>
+                <section class="flex">
+                    <fieldset class="form-oneline">
+                        <label>Days Of Week</label>
+                        {{ range .CreateEmptyDaysOfWeek }}
+                            <label>
+                                <input type="checkbox" name="daysOfWeek" value="{{.Name}}" {{.Checked}}>
+                                {{ .Name }}
+                            </label>
+                        {{ end }}
+                    </fieldset>
                     <article class="flex">
                         {{ range .AllDevices }}
                             <section id="schedule-new-device-{{.ID}}" class="chamfer card">
@@ -247,6 +254,7 @@
                         {{ end }}
                     </article>
                 </section>
+                <button type="submit" class="chamfer">Create</button>
             </article>
         </form>
     </section>

@@ -19,10 +19,11 @@ type DeviceSettingPayload struct {
 }
 
 type SchedulePOSTRequestBody struct {
-	Name    string                 `json:"name"`
-	OnTime  string                 `json:"ontime"`
-	OffTime string                 `json:"offtime"`
-	Devices []DeviceSettingPayload `json:"devices"`
+	Name       string                 `json:"name"`
+	OnTime     string                 `json:"ontime"`
+	OffTime    string                 `json:"offtime"`
+	DaysOfWeek []string               `json:"daysOfWeek"`
+	Devices    []DeviceSettingPayload `json:"devices"`
 }
 
 func (body SchedulePOSTRequestBody) ToScheduleCreateTemplate() (*queries.ScheduleCreateTemplate, error) {
@@ -39,11 +40,14 @@ func (body SchedulePOSTRequestBody) ToScheduleCreateTemplate() (*queries.Schedul
 		return nil, err
 	}
 
+	fmt.Println(body.DaysOfWeek)
+
 	return &queries.ScheduleCreateTemplate{
-		Name:    body.Name,
-		OnTime:  onTime,
-		OffTime: offTime,
-		Devices: mapDevices(body.Devices),
+		Name:       body.Name,
+		OnTime:     onTime,
+		OffTime:    offTime,
+		DaysOfWeek: body.DaysOfWeek,
+		Devices:    mapDevices(body.Devices),
 	}, nil
 }
 

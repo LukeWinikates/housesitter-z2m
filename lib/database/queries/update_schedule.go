@@ -3,6 +3,7 @@ package queries
 import (
 	"LukeWinikates/january-twenty-five/lib/database"
 	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -10,6 +11,10 @@ func UpdateSchedule(db *gorm.DB, existingSchedule *database.Schedule, request Sc
 	existingSchedule.FriendlyName = request.Name
 	existingSchedule.OffTime = request.OffTime
 	existingSchedule.OnTime = request.OnTime
+	fmt.Println(existingSchedule.DaysOfWeek)
+	existingSchedule.DaysOfWeek = database.DaysOfWeekFromStringArray(request.DaysOfWeek)
+	fmt.Println(existingSchedule.DaysOfWeek)
+	fmt.Println(existingSchedule.NumeralDaysOfWeek())
 
 	if err := db.Save(existingSchedule).Error; err != nil {
 		return err

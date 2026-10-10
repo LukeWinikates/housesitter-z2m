@@ -4,6 +4,7 @@ import (
 	"LukeWinikates/january-twenty-five/lib/database"
 	"LukeWinikates/january-twenty-five/lib/timeofday"
 	"fmt"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -15,10 +16,11 @@ type DeviceSettingCreate struct {
 }
 
 type ScheduleCreateTemplate struct {
-	Name    string
-	OnTime  timeofday.SecondsInDay
-	OffTime timeofday.SecondsInDay
-	Devices []*DeviceSettingCreate
+	Name       string
+	OnTime     timeofday.SecondsInDay
+	OffTime    timeofday.SecondsInDay
+	DaysOfWeek []string
+	Devices    []*DeviceSettingCreate
 }
 
 func CreateSchedule(db *gorm.DB, request ScheduleCreateTemplate) error {
@@ -27,6 +29,7 @@ func CreateSchedule(db *gorm.DB, request ScheduleCreateTemplate) error {
 		FriendlyName: request.Name,
 		OffTime:      request.OffTime,
 		OnTime:       request.OnTime,
+		DaysOfWeek:   database.DaysOfWeekFromStringArray(request.DaysOfWeek),
 	}
 
 	for _, requestedDevice := range request.Devices {

@@ -18,7 +18,32 @@ const (
 	Saturday
 )
 
+var stringsToDays map[string]uint8
+
+func init() {
+	stringsToDays = map[string]uint8{
+		"Sunday":    Sunday,
+		"Monday":    Monday,
+		"Tuesday":   Tuesday,
+		"Wednesday": Wednesday,
+		"Thursday":  Thursday,
+		"Friday":    Friday,
+		"Saturday":  Saturday,
+	}
+}
+
 type HexColor = string
+
+func DaysOfWeekFromStringArray(week []string) uint8 {
+	var result = uint8(0)
+	for _, day := range week {
+		u, ok := stringsToDays[day]
+		if ok {
+			result = result | u
+		}
+	}
+	return result
+}
 
 type Schedule struct {
 	gorm.Model
