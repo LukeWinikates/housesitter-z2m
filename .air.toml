@@ -1,6 +1,7 @@
 [build]
 cmd = "go build -o build/server cmd/main.go"
-bin = "build/server --data-dir=tmp"
+entrypoint = "build/server"
 #exclude_dir = ["web", "data","node_modules"]
 #include_dir=["lib"]
+include_dir = ["cmd", "lib", "public"]
 include_file = ["lib/server/http/index.gohtml", "lib/server/http/device.gohtml", ".air.toml"]

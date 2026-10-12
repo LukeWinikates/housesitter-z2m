@@ -18,13 +18,20 @@ func NewTransitionsInWindowQuery(store database.Store) *TransitionsInWindowQuery
 
 }
 
+type TransitionKind int
+
+const (
+	TransitionOn = iota
+	TransitionOff
+)
+
 type Transition struct {
 	Device  *database.Device
 	Time    timeofday.SecondsInDay
 	Message devices.LightControl
+	Kind    TransitionKind
 }
 
-// , day DayOfWeek)
 func (q *TransitionsInWindowQuery) Find(start, end time.Time) []Transition {
 	schedules := q.store.All()
 
@@ -37,6 +44,7 @@ func (q *TransitionsInWindowQuery) Find(start, end time.Time) []Transition {
 					Message: devices.OnMessage(int(d.Brightness)),
 					Device:  d.Device,
 					Time:    timeofday.TimeToSecondsInDay(nextOn),
+					Kind:    TransitionOn,
 				})
 			}
 		}
@@ -45,7 +53,8 @@ func (q *TransitionsInWindowQuery) Find(start, end time.Time) []Transition {
 				result = append(result, Transition{
 					Message: devices.OffMessage(),
 					Device:  d.Device,
-					Time:    s.OffTime,
+					Time:    timeofday.TimeToSecondsInDay(nextOff),
+					Kind:    TransitionOff,
 				})
 			}
 		}

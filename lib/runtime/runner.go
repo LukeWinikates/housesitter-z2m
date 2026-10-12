@@ -62,7 +62,7 @@ func (r *runner) scheduleEventsForNextInterval(end time.Time) {
 			<-timer.C
 			msg := t.Message
 
-			fmt.Printf("sending message for %s\n", t.Device.FriendlyName)
+			fmt.Printf("sending %v message for %s\n", t.Kind, t.Device.FriendlyName)
 			err := r.z2mClient.SetDeviceState(t.Device.IEEEAddress, msg)
 			if err != nil {
 				fmt.Println("err")

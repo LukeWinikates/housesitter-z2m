@@ -18,9 +18,9 @@ import (
 func main() {
 	mqttHost := os.Getenv("MQTT_HOST")
 	clientID := os.Getenv("MQTT_CLIENT_ID")
-	//if mqttHost == "" || clientID == "" {
-	//	log.Fatal("missing required MQTT_HOST or MQTT_CLIENT_ID environment variables")
-	//}
+	if mqttHost == "" || clientID == "" {
+		log.Fatal("missing required MQTT_HOST or MQTT_CLIENT_ID environment variables")
+	}
 	s, err := createServer(mqttHost, clientID)
 	if err != nil {
 		log.Fatal(err.Error())
@@ -40,8 +40,8 @@ func main() {
 }
 
 func createServer(mqttHost, mqttClientID string) (server.Server, error) {
-	//client := zigbee2mqtt.NoOpClient()
-	client := zigbee2mqtt.NewClient(mqttHost, mqttClientID)
+	client := zigbee2mqtt.NoOpClient()
+	//client := zigbee2mqtt.NewClient(mqttHost, mqttClientID)
 	options, err := createServerOptions()
 	if err != nil {
 		return nil, fmt.Errorf("failed to set up with configuration: %s", err.Error())

@@ -23,7 +23,7 @@ header h1 {
 
 .card {
     background-color: bisque;
-    padding: 4px;
+    padding: 18px;
     margin: 18px;
 }
 
@@ -42,10 +42,6 @@ header h1 {
     background-color: mediumslateblue;
     text-align: center;
     align-content: center;
-}
-
-.label-inline {
-    display: inline;
 }
 
 .label:hover {
@@ -71,6 +67,15 @@ header h1 {
             5px 100%,
             0% calc(100% - 5px),
             0% 5px);
+}
+
+.danger {
+    background-color: coral;
+}
+
+.card-buttonbar {
+    display: flex;
+    justify-content: flex-end;
 }
 
 .flex {

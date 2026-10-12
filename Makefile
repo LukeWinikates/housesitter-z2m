@@ -14,3 +14,6 @@ test:
 run:
 	go run cmd/main.go
 
+watch:
+	-rm build/server
+	~/go/bin/air
