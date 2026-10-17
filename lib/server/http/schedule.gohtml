@@ -1,7 +1,7 @@
 {{define "schedule"}}
     <section class="card chamfer" id="schedule-{{.ID}}">
         <article>
-            <form onsubmit="saveSchedule(this, event)" id="form-schedule-{{.ID}}">
+            <form onsubmit="saveSchedule('{{.ID}}',this, event)" id="form-schedule-{{.ID}}">
                 <section class="form-oneline">
                     <input type="hidden" name="id" value="{{.ID}}">
                     <input type="hidden" name="name" value="{{.FriendlyName}}">

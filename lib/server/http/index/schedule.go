@@ -11,7 +11,6 @@ import (
 type GridSchedule struct {
 	OnTime           timeofday.SecondsInDay
 	OffTime          timeofday.SecondsInDay
-	FriendlyName     string
 	Devices          []GridDeviceSettings
 	Row              int
 	ID               string
@@ -21,6 +20,10 @@ type GridSchedule struct {
 
 func (s GridSchedule) FormattedTime() string {
 	return fmt.Sprintf("%s - %s", s.OnTime.HumanReadable(), s.OffTime.HumanReadable())
+}
+
+func (s GridSchedule) FriendlyName() string {
+	return s.FormattedTime()
 }
 
 func (s GridSchedule) InlineStyles() template.HTMLAttr {
@@ -53,7 +56,6 @@ func displaySchedules(schedules []*database.Schedule, allDevices []GridDevice) [
 			OnTime:           s.OnTime,
 			OffTime:          s.OffTime,
 			DaysOfWeek:       daysOfWeekToCheckboxStates(s),
-			FriendlyName:     s.FriendlyName,
 			Row:              i + 1,
 			Devices:          settings,
 			AvailableDevices: availableDevices,
@@ -74,7 +76,6 @@ func createEmptySchedule(allDevices []GridDevice) GridSchedule {
 		OnTime:           timeofday.NewSecondsInDay(9, 0, 0),
 		OffTime:          timeofday.NewSecondsInDay(2, 0, timeofday.PM),
 		DaysOfWeek:       createEmptyDaysOfWeek(),
-		FriendlyName:     "new",
 		Row:              0,
 		Devices:          nil,
 		AvailableDevices: availableDevices,
