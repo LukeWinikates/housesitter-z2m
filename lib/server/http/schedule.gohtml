@@ -1,0 +1,52 @@
+{{define "schedule"}}
+    <section class="card chamfer" id="schedule-{{.ID}}">
+        <article>
+            <form onsubmit="saveSchedule(this, event)" id="form-schedule-{{.ID}}">
+                <section class="form-oneline">
+                    <input type="hidden" name="id" value="{{.ID}}">
+                    <input type="hidden" name="name" value="{{.FriendlyName}}">
+                    <fieldset class="flex-1">
+                        <label>Days Of Week</label>
+                        {{ range .DaysOfWeek }}
+                            <label>
+                                <input type="checkbox" name="daysOfWeek" value="{{.Name}}" {{.Checked}}>
+                                {{ .Name }}
+                            </label>
+                        {{ end }}
+
+                    </fieldset>
+                    <fieldset class="flex-1">
+                        <header>Timing</header>
+                        <label>On at
+                            <input type="time" name="ontime" step="60" value="{{.OnTime.HTMLValue}}">
+                        </label>
+                        <label>Off at
+                            <input type="time" step="60" name="offtime" value="{{.OffTime.HTMLValue}}">
+                        </label>
+                    </fieldset>
+                    <fieldset class="flex-2">
+                        <header>
+                            Devices
+                            <button onclick="toggleDeviceMode('schedule-{{.ID}}', event)">Show All</button>
+                        </header>
+                        <article class="flex">
+                            {{ range .Devices}}
+                                {{template "device" .}}
+                            {{ end }}
+                        </article>
+                        <article class="flex">
+                            {{ range .AvailableDevices }}
+                                {{template "device" .}}
+                            {{ end }}
+                        </article>
+                    </fieldset>
+                </section>
+            </form>
+        </article>
+        <article class="card-buttonbar">
+            <button class="chamfer" type="submit" form="form-schedule-{{.ID}}">Update</button>
+            <button class="chamfer danger" onclick="destroySchedule('{{.ID}}', '{{.FriendlyName}}', event)">Delete
+            </button>
+        </article>
+    </section>
+{{end}}

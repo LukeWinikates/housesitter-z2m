@@ -13,6 +13,7 @@ type GridDeviceSettings struct {
 	Brightness   uint8
 	Color        string
 	InSchedule   bool
+	ScheduleID   string
 }
 
 func (d GridDeviceSettings) Checked() template.HTMLAttr {
@@ -25,9 +26,9 @@ func (d GridDeviceSettings) DisplayClasses() template.HTMLAttr {
 	if d.InSchedule {
 		return ""
 	}
-	return "hidden"
+	return "hidden hidable"
 }
-func toGridDeviceSettings(devices []*database.DeviceSetting) []GridDeviceSettings {
+func toGridDeviceSettings(scheduleID string, devices []*database.DeviceSetting) []GridDeviceSettings {
 	gridDevices := make([]GridDeviceSettings, len(devices))
 	for i, device := range devices {
 		gridDevices[i] = GridDeviceSettings{
@@ -37,6 +38,7 @@ func toGridDeviceSettings(devices []*database.DeviceSetting) []GridDeviceSetting
 			Brightness:   device.Brightness,
 			Color:        device.Color,
 			InSchedule:   true,
+			ScheduleID:   scheduleID,
 		}
 	}
 	return gridDevices

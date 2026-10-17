@@ -37,7 +37,7 @@ func (s GridSchedule) InlineStyles() template.HTMLAttr {
 func displaySchedules(schedules []*database.Schedule, allDevices []GridDevice) []GridSchedule {
 	var result []GridSchedule
 	for i, s := range schedules {
-		settings := toGridDeviceSettings(s.DeviceSettings)
+		settings := toGridDeviceSettings(s.ID, s.DeviceSettings)
 		var availableDevices []GridDeviceSettings
 		for _, d := range allDevices {
 			for _, set := range settings {
@@ -60,6 +60,25 @@ func displaySchedules(schedules []*database.Schedule, allDevices []GridDevice) [
 		})
 	}
 	return result
+}
+
+func createEmptySchedule(allDevices []GridDevice) GridSchedule {
+	var availableDevices []GridDeviceSettings
+	for _, d := range allDevices {
+
+		availableDevices = append(availableDevices, d.CreateEmptyDeviceSettings())
+	}
+
+	return GridSchedule{
+		ID:               "new",
+		OnTime:           timeofday.NewSecondsInDay(9, 0, 0),
+		OffTime:          timeofday.NewSecondsInDay(2, 0, timeofday.PM),
+		DaysOfWeek:       createEmptyDaysOfWeek(),
+		FriendlyName:     "new",
+		Row:              0,
+		Devices:          nil,
+		AvailableDevices: availableDevices,
+	}
 }
 
 var intToDayOfWeek = map[int]string{
@@ -94,6 +113,6 @@ func daysOfWeekToCheckboxStates(s *database.Schedule) []DayOfWeekCheckboxStates 
 	return result
 }
 
-func (g ViewGrid) CreateEmptyDaysOfWeek() []DayOfWeekCheckboxStates {
+func createEmptyDaysOfWeek() []DayOfWeekCheckboxStates {
 	return daysOfWeekToCheckboxStates(&database.Schedule{})
 }

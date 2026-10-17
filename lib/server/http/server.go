@@ -5,10 +5,11 @@ import (
 	"LukeWinikates/january-twenty-five/lib/runtime"
 	"LukeWinikates/january-twenty-five/lib/server/http/api"
 	"context"
-	"gorm.io/gorm"
 	"html/template"
 	"net/http"
 	"os"
+
+	"gorm.io/gorm"
 )
 
 // cool idea - a router object passed in to all the templates
@@ -22,7 +23,7 @@ const POST_RUNNER_STATUS_PATTERN = "POST /api/runner"
 var homepageTemplate *template.Template
 
 func init() {
-	homepageTemplate = template.Must(template.ParseFiles("lib/server/http/index.gohtml", "lib/server/http/device.gohtml"))
+	homepageTemplate = template.Must(template.ParseFiles("lib/server/http/index.gohtml", "lib/server/http/device.gohtml", "lib/server/http/schedule.gohtml"))
 }
 
 type Server interface {

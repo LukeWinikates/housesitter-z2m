@@ -28,6 +28,7 @@ func Grid(list []*database.Schedule, allDevices []*database.Device, isRunnerRunn
 	allGridDevices := toDeviceList(allDevices)
 	return ViewGrid{
 		Schedules:       displaySchedules(list, allGridDevices),
+		EmptySchedule:   createEmptySchedule(allGridDevices),
 		AllDevices:      allGridDevices,
 		Legends:         legends,
 		GridClasses:     "",
@@ -47,4 +48,5 @@ type ViewGrid struct {
 	GridClasses     string
 	AllDevices      []GridDevice
 	IsRunnerRunning bool
+	EmptySchedule   GridSchedule
 }

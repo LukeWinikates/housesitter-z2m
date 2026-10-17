@@ -57,7 +57,19 @@ header h1 {
     align-content: baseline;
 }
 
-.chamfer {
+fieldset {
+    padding: 12px;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.flex-2 {
+    flex: 2;
+}
+
+.chamfer, button {
     clip-path: polygon(
             5px 0%,
             calc(100% - 5px) 0%,
@@ -135,6 +147,27 @@ button:hover {
     background-color: lightcoral;
 }
 
-.card.hidden {
+.chip.hidden, #schedule-new.hidden {
     display: none;
+}
+
+.chip:hover {
+    border-color: darkslateblue;
+    cursor: pointer;
+}
+
+.chip:has(input[type=checkbox]:checked) {
+    background-color: mediumslateblue;
+}
+
+.chip {
+    border: 2px solid transparent;
+    background-color: lightslategray;
+    margin: 5px;
+    padding: 4px;
+    font-size: 10pt;
+}
+
+.chip h3 {
+    font-size: 12pt;
 }

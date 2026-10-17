@@ -6,15 +6,21 @@
     <title>Housesitter</title>
     <link href="/public/main.css" rel="stylesheet">
     <script>
-      function openpanel(id) {
+      function openPanel(id) {
         const panel = document.querySelector("#panel");
         panel.classList.toggle("hidden")
         panel.querySelector(`#schedule-${id}`).scrollIntoView();
       }
 
+      function openNewSchedulePanel() {
+        const panel = document.querySelector("#schedule-new");
+        panel.classList.toggle("hidden")
+        panel.scrollIntoView();
+      }
+
       function toggleDeviceMode(id, event) {
         event.preventDefault();
-        document.querySelector(`#${id}`).querySelectorAll('.card.hidable').forEach(c => c.classList.toggle("hidden"));
+        document.querySelector(`#${id}`).querySelectorAll('.chip.hidable').forEach(c => c.classList.toggle("hidden"));
       }
 
       function requestPayloadFromForm(form) {
@@ -40,24 +46,12 @@
         return {name, offtime, ontime, devices, daysOfWeek};
       }
 
-      function createSchedule(form, event) {
+      function saveSchedule(id, form, event) {
         event.preventDefault();
-        let value = requestPayloadFromForm(form);
-        fetch(`/api/schedules/`, {
-          method: "POST",
-          body: JSON.stringify(value)
-        }).then(() => {
-          location.reload()
-        })
-      }
-
-      function updateSchedule(form, event) {
-        event.preventDefault();
-        const formData = new FormData(form);
-        const {id} = Object.fromEntries(formData)
-        const url = `/api/schedules/${id}`
+        const url = id === 'new' ? '/api/schedules/' : `/api/schedules/${id}`;
+        const method = id === 'new' ? 'POST' : 'PUT';
         fetch(url, {
-          method: "PUT",
+          method,
           body: JSON.stringify(requestPayloadFromForm(form))
         }).then(() => {
           location.reload()
@@ -139,7 +133,6 @@
         {{ end }}
         {{ range .Schedules }}
             <div style="grid-row-start:calc({{.Row }} + 1)">
-                <div>{{.FriendlyName}}</div>
                 <div>
                     {{range .Devices}}
                         <span title="{{.FriendlyName}}"
@@ -149,119 +142,25 @@
                     {{end}}
                 </div>
             </div>
-            <div class="label chamfer" onclick="openpanel({{.ID}})"
+            <div class="label chamfer" onclick="openPanel({{.ID}})"
                     {{ .InlineStyles }}
             >
                 {{ .FormattedTime }}
             </div>
         {{ end }}
         <div style="grid-row-start:calc({{ .Schedules | len }} + 2); grid-column-start: tick 1; grid-column-end: tick 48;">
-            <button class="chamfer" style="width: 100%" onclick="openpanel('new')">Create New Schedule</button>
+            <button class="chamfer" style="width: 100%" onclick="openNewSchedulePanel()">Create New Schedule</button>
         </div>
     </article>
 </section>
 <article id="panel" class="hidden">
     {{ range .Schedules }}
-        {{ $scheduleID := .ID }}
-        <section class="card" id="schedule-{{.ID}}">
-            <header>
-                <sub>schedule</sub><h2>{{.FriendlyName}}</h2>
-            </header>
-            <article>
-                <form onsubmit="updateSchedule(this, event)" id="form-schedule-{{.ID}}">
-                    <section class="form-oneline">
-                        <input type="hidden" name="id" value="{{.ID}}">
-                        <input type="hidden" name="name" value="{{.FriendlyName}}">
-                        <fieldset>
-                            <label>Days Of Week</label>
-                            {{ range .DaysOfWeek }}
-                                <label>
-                                    <input type="checkbox" name="daysOfWeek" value="{{.Name}}" {{.Checked}}>
-                                    {{ .Name }}
-                                </label>
-                            {{ end }}
-
-                        </fieldset>
-                        <fieldset>
-                            <header>Timing</header>
-                            <label>On at
-                                <input type="time" name="ontime" step="60" value="{{.OnTime.HTMLValue}}">
-                            </label>
-                            <label>Off at
-                                <input type="time" step="60" name="offtime" value="{{.OffTime.HTMLValue}}">
-                            </label>
-                        </fieldset>
-                    </section>
-                    <section>
-                        <header>
-                            Devices
-                            <button onclick="toggleDeviceMode('schedule-{{.ID}}', event)">Show All</button>
-                        </header>
-                        <article class="flex">
-                            {{ range .Devices}}
-                                <section id="schedule-{{$scheduleID}}-device-{{.ID}}"
-                                         class="chamfer card {{.DisplayClasses}}">
-                                    {{template "device" .}}
-                                </section>
-                            {{ end }}
-                        </article>
-                        <article class="flex">
-                            {{ range .AvailableDevices }}
-                                <section id="schedule-{{$scheduleID}}-device-{{.ID}}"
-                                         class="chamfer card hidable {{.DisplayClasses}}">
-                                    {{template "device" .}}
-                                </section>
-                            {{ end }}
-                        </article>
-                    </section>
-                </form>
-            </article>
-            <article class="card-buttonbar">
-                <button class="chamfer" type="submit" form="form-schedule-{{.ID}}">Update</button>
-                <button class="chamfer danger" onclick="destroySchedule('{{.ID}}', '{{.FriendlyName}}', event)">Delete
-                </button>
-            </article>
-        </section>
+        {{ template "schedule" . }}
     {{ end }}
-    <section class="card" id="schedule-new">
-        <form onsubmit="createSchedule(this, event)">
-            <header>
-                <h2>New Schedule <sub>schedule</sub></h2>
-            </header>
-            <article>
-                <section class="form-oneline">
-                    <label>Name
-                        <input type="text" name="name"></h2>
-                    </label>
-                    <label>On Time
-                        <input type="time" name="ontime" step="60" value="09:00">
-                    </label>
-                    <label>Off Time
-                        <input type="time" step="60" name="offtime" value="14:00">
-                    </label>
-                </section>
-                <section class="flex">
-                    <fieldset class="form-oneline">
-                        <label>Days Of Week</label>
-                        {{ range .CreateEmptyDaysOfWeek }}
-                            <label>
-                                <input type="checkbox" name="daysOfWeek" value="{{.Name}}" {{.Checked}}>
-                                {{ .Name }}
-                            </label>
-                        {{ end }}
-                    </fieldset>
-                    <article class="flex">
-                        {{ range .AllDevices }}
-                            <section id="schedule-new-device-{{.ID}}" class="chamfer card">
-                                {{template "device" .CreateEmptyDeviceSettings }}
-                            </section>
-                        {{ end }}
-                    </article>
-                </section>
-                <button type="submit" class="chamfer">Create</button>
-            </article>
-        </form>
-    </section>
+</article>
+<article id="schedule-new" class="hidden">
+    <h3>New Schedule</h3>
+    {{ template "schedule" .EmptySchedule }}
 </article>
 </body>
 </html>
