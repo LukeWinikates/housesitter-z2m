@@ -1,6 +1,7 @@
 {{define "device"}}
     <section id="schedule-{{.ScheduleID}}-device-{{.ID}}"
              class="chamfer chip {{.DisplayClasses}}">
+        <label for="device[{{.ID}}][include]">
         <header>
             <h3>{{.FriendlyName}}</h3>
         </header>
@@ -8,7 +9,7 @@
             <div style="display: flex; flex-direction: column; align-items: flex-end">
                 <label>
                     <span>add to schedule</span>
-                    <input name="device[{{.ID}}][include]" type="checkbox" {{.Checked}} }>
+                    <input id="device[{{.ID}}][include]" name="device[{{.ID}}][include]" type="checkbox" {{.Checked}} }>
                 </label>
                 <input type="hidden" name="device[{{.ID}}][id]" value="{{.ID}}">
                 <label class="label-fullwidth">
@@ -24,5 +25,6 @@
                 </label>
             </div>
         </article>
+        </label>
     </section>
 {{end}}

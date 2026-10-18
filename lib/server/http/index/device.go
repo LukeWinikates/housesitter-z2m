@@ -6,8 +6,7 @@ import (
 )
 
 type GridDeviceSettings struct {
-	RowNumber int
-	//DisplayClasses string
+	RowNumber    int
 	FriendlyName string
 	ID           string
 	Brightness   uint8

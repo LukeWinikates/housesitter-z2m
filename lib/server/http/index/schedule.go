@@ -115,5 +115,7 @@ func daysOfWeekToCheckboxStates(s *database.Schedule) []DayOfWeekCheckboxStates 
 }
 
 func createEmptyDaysOfWeek() []DayOfWeekCheckboxStates {
-	return daysOfWeekToCheckboxStates(&database.Schedule{})
+	s := &database.Schedule{}
+	s.SetBooleanDaysOfWeek(true, true, true, true, true, true, true)
+	return daysOfWeekToCheckboxStates(s)
 }

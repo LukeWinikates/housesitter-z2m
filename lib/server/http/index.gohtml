@@ -57,6 +57,23 @@
           location.reload()
         })
       }
+      function selectDaysOfWeek(button, event, selection) {
+        event.preventDefault();
+        const form = button.parentElement.parentElement.parentElement;
+        const dayOfWeekCheckboxes = form.querySelectorAll('input[type=checkbox][name=daysOfWeek]');
+
+        dayOfWeekCheckboxes.forEach(checkBoxElement => {
+          if (selection === 'daily') {
+            checkBoxElement.checked = true;
+          }
+          if (selection === 'weekends') {
+            checkBoxElement.checked = checkBoxElement.value === 'Sunday' || checkBoxElement.value === 'Saturday';
+          }
+          if (selection === 'weekdays') {
+            checkBoxElement.checked = checkBoxElement.value !== 'Sunday' && checkBoxElement.value !== 'Saturday';
+          }
+        })
+      }
 
       function destroySchedule(id, name, event) {
         event.preventDefault();

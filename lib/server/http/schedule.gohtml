@@ -13,6 +13,9 @@
                                 {{ .Name }}
                             </label>
                         {{ end }}
+                        <button onclick="selectDaysOfWeek(this, event, 'weekdays')">Weekdays</button>
+                        <button onclick="selectDaysOfWeek(this, event, 'weekends')">Weekends</button>
+                        <button onclick="selectDaysOfWeek(this, event, 'daily')">Daily</button>
 
                     </fieldset>
                     <fieldset class="flex-1">
