@@ -15,10 +15,8 @@ header h1 {
     margin: 0;
 }
 
-#schedule-grid {
-    background-color: bisque;
-    padding: 4px;
-    margin: 18px;
+button {
+    cursor: pointer;
 }
 
 .card {
@@ -52,13 +50,13 @@ header h1 {
     background-color: mediumslateblue;
 }
 
-.form-oneline {
-    display: flex;
-    align-content: baseline;
-}
-
 fieldset {
     padding: 12px;
+}
+
+fieldset header {
+    padding: 4px 0;
+    font-size: larger;
 }
 
 .flex-1 {
@@ -67,6 +65,10 @@ fieldset {
 
 .flex-2 {
     flex: 2;
+}
+
+.flex-column {
+    flex-direction: column;
 }
 
 .chamfer, button {
@@ -95,10 +97,13 @@ fieldset {
     flex-wrap: wrap;
 }
 
+.flex-end {
+    justify-content: flex-end;
+}
+
 .label-fullwidth {
     display: flex;
     justify-content: space-between;
-    margin: 5px 0;
     width: 100%;
 }
 

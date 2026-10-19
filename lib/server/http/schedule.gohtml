@@ -1,12 +1,12 @@
 {{define "schedule"}}
-    <section class="card chamfer" id="schedule-{{.ID}}">
+    <section class="card chamfer flex flex-column" id="schedule-{{.ID}}">
         <article>
             <form onsubmit="saveSchedule('{{.ID}}',this, event)" id="form-schedule-{{.ID}}">
-                <section class="form-oneline">
+                <section class="flex">
                     <input type="hidden" name="id" value="{{.ID}}">
                     <input type="hidden" name="name" value="{{.FriendlyName}}">
                     <fieldset class="flex-1">
-                        <label>Days Of Week</label>
+                        <header>Days Of Week</header>
                         {{ range .DaysOfWeek }}
                             <label>
                                 <input type="checkbox" name="daysOfWeek" value="{{.Name}}" {{.Checked}}>
@@ -20,23 +20,25 @@
                     </fieldset>
                     <fieldset class="flex-1">
                         <header>Timing</header>
-                        <label>On at
-                            <input type="time" name="ontime" step="60" value="{{.OnTime.HTMLValue}}">
+                        <label class="flex flex-end">
+                            <span class="flex-1">On at</span>
+                            <input class="flex-2" type="time" name="ontime" step="60" value="{{.OnTime.HTMLValue}}">
                         </label>
-                        <label>Off at
-                            <input type="time" step="60" name="offtime" value="{{.OffTime.HTMLValue}}">
+                        <label class="flex flex-end">
+                            <span class="flex-1">Off at</span>
+                            <input class="flex-2" type="time" step="60" name="offtime" value="{{.OffTime.HTMLValue}}">
                         </label>
                     </fieldset>
                     <fieldset class="flex-2">
                         <header>
                             Devices
-                            <button onclick="toggleDeviceMode('schedule-{{.ID}}', event)">Show All</button>
                         </header>
                         <article class="flex">
                             {{ range .Devices}}
                                 {{template "device" .}}
                             {{ end }}
                         </article>
+                        <button onclick="toggleDeviceMode('schedule-{{.ID}}', event)">Show All</button>
                         <article class="flex">
                             {{ range .AvailableDevices }}
                                 {{template "device" .}}
@@ -48,7 +50,9 @@
         </article>
         <article class="card-buttonbar">
             <button class="chamfer" type="submit" form="form-schedule-{{.ID}}">Update</button>
+            {{ if ne .ID "new "}}
             <button class="chamfer danger" onclick="destroySchedule('{{.ID}}', '{{.FriendlyName}}', event)">Delete
+            {{ end}}
             </button>
         </article>
     </section>
