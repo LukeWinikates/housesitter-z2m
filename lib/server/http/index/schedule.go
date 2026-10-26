@@ -63,7 +63,7 @@ func displaySchedules(schedules []*database.Schedule, allDevices []GridDevice) [
 				}
 			}
 			if shouldAdd {
-				availableDevices = append(availableDevices, d.CreateEmptyDeviceSettings())
+				availableDevices = append(availableDevices, d.CreateEmptyDeviceSettings(s.ID))
 			}
 		}
 
@@ -84,7 +84,7 @@ func createEmptySchedule(allDevices []GridDevice) GridSchedule {
 	var availableDevices []GridDeviceSettings
 	for _, d := range allDevices {
 
-		availableDevices = append(availableDevices, d.CreateEmptyDeviceSettings())
+		availableDevices = append(availableDevices, d.CreateEmptyDeviceSettings("new"))
 	}
 
 	return GridSchedule{

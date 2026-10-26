@@ -1,7 +1,7 @@
 {{define "schedule"}}
     {{ $newMode := eq .ID "new" }}
     <section class="card chamfer flex flex-column" id="schedule-{{.ID}}">
-        <form onsubmit="saveSchedule('{{.ID}}',this, event)" id="form-schedule-{{.ID}}">
+        <form autocomplete="off" onsubmit="saveSchedule('{{.ID}}',this, event)" id="form-schedule-{{.ID}}">
             <section class="flex">
                 <input type="hidden" name="id" value="{{.ID}}">
                 <input type="hidden" name="name" value="{{.FriendlyName}}">

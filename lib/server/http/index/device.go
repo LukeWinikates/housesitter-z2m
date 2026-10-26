@@ -48,12 +48,13 @@ type GridDevice struct {
 	ID           string
 }
 
-func (gd GridDevice) CreateEmptyDeviceSettings() GridDeviceSettings {
+func (gd GridDevice) CreateEmptyDeviceSettings(scheduleID string) GridDeviceSettings {
 	return GridDeviceSettings{
 		FriendlyName: gd.FriendlyName,
 		ID:           gd.ID,
 		Brightness:   100,
 		Color:        "#ffffff",
+		ScheduleID:   scheduleID,
 	}
 }
 
