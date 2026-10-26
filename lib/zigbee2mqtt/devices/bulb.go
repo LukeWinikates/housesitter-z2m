@@ -22,8 +22,12 @@ type LightControl struct {
 }
 
 func OnMessage(brightness int) LightControl {
+	messageBrightness := 254
+	if brightness < 100 {
+		messageBrightness = brightness * 254 / 100
+	}
 	return LightControl{
-		Brightness: brightness,
+		Brightness: messageBrightness,
 		ColorMode:  "color_temp",
 		ColorTemp:  370,
 		LevelConfig: LevelConfig{

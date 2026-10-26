@@ -57,6 +57,7 @@
           location.reload()
         })
       }
+
       function selectDaysOfWeek(button, event, selection) {
         event.preventDefault();
         const form = button.parentElement.parentElement.parentElement;
@@ -149,7 +150,10 @@
             </div>
         {{ end }}
         {{ range .Schedules }}
-            <div style="grid-row-start:calc({{.Row }} + 1)">
+            <div style="font-family: monospace;grid-row-start:calc({{.Row }} + 1); grid-column-start: dayofweek 1; grid-column-end: dayofweek 7">
+                {{.DayOfWeekText}}
+            </div>
+            <div style="grid-row-start:calc({{.Row }} + 1); grid-column: labels">
                 <div>
                     {{range .Devices}}
                         <span title="{{.FriendlyName}}"

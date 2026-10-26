@@ -38,10 +38,14 @@ func (s SecondsInDay) HTMLValue() string {
 }
 
 func (s SecondsInDay) AMPM() string {
-	if s%NEXT_DAY >= PM {
+	if s.IsPM() {
 		return "pm"
 	}
 	return "am"
+}
+
+func (s SecondsInDay) IsPM() bool {
+	return s%NEXT_DAY >= PM
 }
 
 func (s SecondsInDay) DaysLater() string {
@@ -49,14 +53,6 @@ func (s SecondsInDay) DaysLater() string {
 		return " (next day)"
 	}
 	return ""
-}
-
-func ToFriendlyTime(seconds SecondsInDay) string {
-	duration, err := time.ParseDuration(fmt.Sprintf("%vs", seconds))
-	if err != nil {
-		return ""
-	}
-	return fmt.Sprintf("%v", duration)
 }
 
 func TimeToSecondsInDay(t time.Time) SecondsInDay {
@@ -73,5 +69,9 @@ func (s SecondsInDay) Today(location *time.Location) time.Time {
 
 func (s SecondsInDay) OnDay(location *time.Location, onDay time.Time) time.Time {
 	y, m, d := onDay.Date()
-	return time.Date(y, m, d, s.Hour(), s.Minute(), 0, 0, location)
+	ampm := 0
+	if s.IsPM() {
+		ampm = 12
+	}
+	return time.Date(y, m, d, s.Hour()+ampm, s.Minute(), 0, 0, location)
 }

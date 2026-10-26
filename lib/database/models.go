@@ -1,6 +1,7 @@
 package database
 
 import (
+	"LukeWinikates/january-twenty-five/lib/dayofweek"
 	"LukeWinikates/january-twenty-five/lib/timeofday"
 	"fmt"
 	"time"
@@ -8,48 +9,13 @@ import (
 	"gorm.io/gorm"
 )
 
-const (
-	Sunday uint8 = 1 << iota
-	Monday
-	Tuesday
-	Wednesday
-	Thursday
-	Friday
-	Saturday
-)
-
-var stringsToDays map[string]uint8
-
-func init() {
-	stringsToDays = map[string]uint8{
-		"Sunday":    Sunday,
-		"Monday":    Monday,
-		"Tuesday":   Tuesday,
-		"Wednesday": Wednesday,
-		"Thursday":  Thursday,
-		"Friday":    Friday,
-		"Saturday":  Saturday,
-	}
-}
-
 type HexColor = string
-
-func DaysOfWeekFromStringArray(week []string) uint8 {
-	var result = uint8(0)
-	for _, day := range week {
-		u, ok := stringsToDays[day]
-		if ok {
-			result = result | u
-		}
-	}
-	return result
-}
 
 type Schedule struct {
 	gorm.Model
 	OnTime         timeofday.SecondsInDay
 	OffTime        timeofday.SecondsInDay
-	DaysOfWeek     uint8
+	DaysOfWeek     dayofweek.DaysOfWeek
 	DeviceSettings []*DeviceSetting
 	FriendlyName   string
 	ID             string `gorm:"primaryKey"`
@@ -68,25 +34,25 @@ func (s *Schedule) NumeralDaysOfWeek() []int {
 func (s *Schedule) SetBooleanDaysOfWeek(sunday, monday, tuesday, wednesday, thursday, friday, saturday bool) {
 	s.DaysOfWeek = 0
 	if sunday {
-		s.DaysOfWeek = s.DaysOfWeek | Sunday
+		s.DaysOfWeek = s.DaysOfWeek | dayofweek.Sunday
 	}
 	if monday {
-		s.DaysOfWeek = s.DaysOfWeek | Monday
+		s.DaysOfWeek = s.DaysOfWeek | dayofweek.Monday
 	}
 	if tuesday {
-		s.DaysOfWeek = s.DaysOfWeek | Tuesday
+		s.DaysOfWeek = s.DaysOfWeek | dayofweek.Tuesday
 	}
 	if wednesday {
-		s.DaysOfWeek = s.DaysOfWeek | Wednesday
+		s.DaysOfWeek = s.DaysOfWeek | dayofweek.Wednesday
 	}
 	if thursday {
-		s.DaysOfWeek = s.DaysOfWeek | Thursday
+		s.DaysOfWeek = s.DaysOfWeek | dayofweek.Thursday
 	}
 	if friday {
-		s.DaysOfWeek = s.DaysOfWeek | Friday
+		s.DaysOfWeek = s.DaysOfWeek | dayofweek.Friday
 	}
 	if saturday {
-		s.DaysOfWeek = s.DaysOfWeek | Saturday
+		s.DaysOfWeek = s.DaysOfWeek | dayofweek.Saturday
 	}
 }
 
@@ -107,7 +73,8 @@ func (s *Schedule) NextOffAfter(afterTime time.Time) time.Time {
 func (s *Schedule) nextEventAfter(timeOfDayFunc func() timeofday.SecondsInDay, afterTime time.Time) time.Time {
 	tod := timeOfDayFunc()
 	if tod > timeofday.TimeToSecondsInDay(afterTime) && s.ActiveOnDayOfWeek(afterTime.Weekday()) {
-		return tod.OnDay(afterTime.Location(), afterTime)
+		day := tod.OnDay(afterTime.Location(), afterTime)
+		return day
 	}
 	return tod.OnDay(afterTime.Location(), s.nextActiveDay(afterTime))
 }

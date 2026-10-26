@@ -28,7 +28,7 @@ button {
 .schedule-box {
     border: 1px solid black;
     display: grid;
-    grid-template-columns: [labels] auto repeat(48, [tick] 1fr);
+    grid-template-columns: repeat(7, [dayofweek] 1fr) [labels] auto 4px repeat(48, [tick] 1fr);
     grid-template-rows: 24px;
     grid-gap: 2px;
     padding: 4px;

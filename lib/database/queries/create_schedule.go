@@ -2,6 +2,7 @@ package queries
 
 import (
 	"LukeWinikates/january-twenty-five/lib/database"
+	"LukeWinikates/january-twenty-five/lib/dayofweek"
 	"LukeWinikates/january-twenty-five/lib/timeofday"
 	"fmt"
 
@@ -29,7 +30,7 @@ func CreateSchedule(db *gorm.DB, request ScheduleCreateTemplate) error {
 		FriendlyName: request.Name,
 		OffTime:      request.OffTime,
 		OnTime:       request.OnTime,
-		DaysOfWeek:   database.DaysOfWeekFromStringArray(request.DaysOfWeek),
+		DaysOfWeek:   dayofweek.DaysOfWeekFromStringArray(request.DaysOfWeek),
 	}
 
 	for _, requestedDevice := range request.Devices {

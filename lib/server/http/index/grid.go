@@ -25,6 +25,16 @@ func Grid(list []*database.Schedule, allDevices []*database.Device, isRunnerRunn
 			Title:          title,
 		}
 	}
+	legends = append(legends, Legend{
+		DisplayClasses: "",
+		Style:          template.HTMLAttr(fmt.Sprintf("style=\"grid-row-start: 1;grid-row-end: 1;grid-column-start:dayofweek 1;grid-column-end:dayofweek 7;\"")),
+		Title:          "Days of Week",
+	})
+	legends = append(legends, Legend{
+		DisplayClasses: "",
+		Style:          template.HTMLAttr(fmt.Sprintf("style=\"padding-right: 8px;grid-row-start: 1;grid-row-end: 1;grid-column-start:labels;grid-column-end:labels;\"")),
+		Title:          "Devices",
+	})
 	allGridDevices := toDeviceList(allDevices)
 	return ViewGrid{
 		Schedules:       displaySchedules(list, allGridDevices),

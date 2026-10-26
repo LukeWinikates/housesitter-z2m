@@ -18,10 +18,11 @@ import (
 func main() {
 	mqttHost := os.Getenv("MQTT_HOST")
 	clientID := os.Getenv("MQTT_CLIENT_ID")
+	noOpFlag := os.Getenv("MQTT_NO_OP_CLIENT") != ""
 	if mqttHost == "" || clientID == "" {
 		log.Fatal("missing required MQTT_HOST or MQTT_CLIENT_ID environment variables")
 	}
-	s, err := createServer(mqttHost, clientID)
+	s, err := createServer(noOpFlag, mqttHost, clientID)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -39,9 +40,8 @@ func main() {
 
 }
 
-func createServer(mqttHost, mqttClientID string) (server.Server, error) {
-	client := zigbee2mqtt.NoOpClient()
-	//client := zigbee2mqtt.NewClient(mqttHost, mqttClientID)
+func createServer(noOpFlag bool, mqttHost, mqttClientID string) (server.Server, error) {
+	client := createMQTTClient(noOpFlag, mqttHost, mqttClientID)
 	options, err := createServerOptions()
 	if err != nil {
 		return nil, fmt.Errorf("failed to set up with configuration: %s", err.Error())
@@ -53,6 +53,15 @@ func createServer(mqttHost, mqttClientID string) (server.Server, error) {
 	database.AutoMigrate(db)
 	s, err := server.New(db, client, *options)
 	return s, err
+}
+
+func createMQTTClient(noOpFlag bool, mqttHost, mqttClientID string) zigbee2mqtt.Client {
+	if noOpFlag {
+		log.Println("Using No-op MQTT client")
+		return zigbee2mqtt.NoOpClient()
+	}
+	log.Printf("Using real MQTT client on %s\n\n", mqttHost)
+	return zigbee2mqtt.NewClient(mqttHost, mqttClientID)
 }
 
 func createServerOptions() (*server.Options, error) {

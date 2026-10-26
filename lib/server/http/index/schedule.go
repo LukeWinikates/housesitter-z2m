@@ -37,18 +37,34 @@ func (s GridSchedule) InlineStyles() template.HTMLAttr {
 	return template.HTMLAttr(fmt.Sprintf("style=\"grid-row-start: %v; grid-column-start:tick %v ; grid-column-end: tick %v\"", s.Row+1, startColumn, endColumn))
 }
 
+func (s GridSchedule) DayOfWeekText() string {
+	var result = ""
+	for _, d := range s.DaysOfWeek {
+		if d.IsChecked {
+			result = fmt.Sprintf("%s%s", result, d.Name[0:1])
+		} else {
+			result = fmt.Sprintf("%s%s", result, "-")
+		}
+	}
+	return result
+}
+
 func displaySchedules(schedules []*database.Schedule, allDevices []GridDevice) []GridSchedule {
 	var result []GridSchedule
 	for i, s := range schedules {
 		settings := toGridDeviceSettings(s.ID, s.DeviceSettings)
 		var availableDevices []GridDeviceSettings
 		for _, d := range allDevices {
+			shouldAdd := true
 			for _, set := range settings {
 				if set.ID == d.ID {
+					shouldAdd = false
 					break
 				}
 			}
-			availableDevices = append(availableDevices, d.CreateEmptyDeviceSettings())
+			if shouldAdd {
+				availableDevices = append(availableDevices, d.CreateEmptyDeviceSettings())
+			}
 		}
 
 		result = append(result, GridSchedule{
@@ -93,8 +109,9 @@ var intToDayOfWeek = map[int]string{
 }
 
 type DayOfWeekCheckboxStates struct {
-	Name    string
-	Checked template.HTMLAttr
+	Name      string
+	IsChecked bool
+	Checked   template.HTMLAttr
 }
 
 func daysOfWeekToCheckboxStates(s *database.Schedule) []DayOfWeekCheckboxStates {
@@ -106,10 +123,10 @@ func daysOfWeekToCheckboxStates(s *database.Schedule) []DayOfWeekCheckboxStates 
 			checkedAttr = "checked"
 		}
 		result = append(result, DayOfWeekCheckboxStates{
-			Name:    intToDayOfWeek[i],
-			Checked: checkedAttr,
+			Name:      intToDayOfWeek[i],
+			IsChecked: checked,
+			Checked:   checkedAttr,
 		})
-
 	}
 	return result
 }

@@ -55,14 +55,13 @@ func (r *runner) Running() bool {
 
 func (r *runner) scheduleEventsForNextInterval(end time.Time) {
 	transitions := queries.NewTransitionsInWindowQuery(r.store).Find(r.lastRun, end)
-	fmt.Printf("found %v transitions\n", len(transitions))
 	for _, t := range transitions {
-		timer := time.NewTimer(time.Until(t.Time.Today(r.location)))
+		timer := time.NewTimer(time.Until(t.Time))
 		go func() {
 			<-timer.C
 			msg := t.Message
 
-			fmt.Printf("sending %v message for %s\n", t.Kind, t.Device.FriendlyName)
+			fmt.Printf("sending %v message for %s at %s\n", t.Kind, t.Device.FriendlyName, t.Time.Format(time.DateTime))
 			err := r.z2mClient.SetDeviceState(t.Device.IEEEAddress, msg)
 			if err != nil {
 				fmt.Println("err")
