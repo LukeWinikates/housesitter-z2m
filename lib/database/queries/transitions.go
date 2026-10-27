@@ -29,7 +29,8 @@ func (q *TransitionsInWindowQuery) Find(start, end time.Time) []Transition {
 	var result []Transition
 
 	for _, s := range schedules {
-		if nextOn := s.NextOnAfter(start); nextOn.Before(end) {
+		nextOn := s.NextOnAfter(start)
+		if nextOn.Before(end) {
 			for _, d := range s.DeviceSettings {
 				result = append(result, Transition{
 					Message: devices.OnMessage(int(d.Brightness)),
@@ -39,7 +40,8 @@ func (q *TransitionsInWindowQuery) Find(start, end time.Time) []Transition {
 				})
 			}
 		}
-		if nextOff := s.NextOffAfter(start); nextOff.Before(end) {
+		nextOff := s.NextOffAfter(start)
+		if nextOff.Before(end) {
 			for _, d := range s.DeviceSettings {
 				result = append(result, Transition{
 					Message: devices.OffMessage(),

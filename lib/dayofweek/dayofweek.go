@@ -31,8 +31,8 @@ func init() {
 		"Saturday":  Saturday,
 	}
 	Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday
-	Weekdays = Saturday | Sunday
-	Daily = Weekends | Weekdays
+	Weekends = Saturday | Sunday
+	Daily = Weekdays | Weekends
 }
 
 func DaysOfWeekFromStringArray(week []string) DaysOfWeek {

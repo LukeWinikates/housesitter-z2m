@@ -73,8 +73,9 @@ func (s *Schedule) NextOffAfter(afterTime time.Time) time.Time {
 func (s *Schedule) nextEventAfter(timeOfDayFunc func() timeofday.SecondsInDay, afterTime time.Time) time.Time {
 	tod := timeOfDayFunc()
 	if tod > timeofday.TimeToSecondsInDay(afterTime) && s.ActiveOnDayOfWeek(afterTime.Weekday()) {
-		day := tod.OnDay(afterTime.Location(), afterTime)
-		return day
+		if day := tod.OnDay(afterTime.Location(), afterTime); day.After(afterTime) {
+			return day
+		}
 	}
 	return tod.OnDay(afterTime.Location(), s.nextActiveDay(afterTime))
 }
