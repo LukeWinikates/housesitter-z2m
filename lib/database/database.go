@@ -20,7 +20,7 @@ func (store *dbStore) All() []*Schedule {
 	return all
 }
 
-func (store *dbStore) SaveChanges(id string, s *Schedule) error {
+func (store *dbStore) SaveChanges(_ string, s *Schedule) error {
 	return store.database.Save(s).Error
 }
 
@@ -30,6 +30,6 @@ func NewDBStore(db *gorm.DB) Store {
 	}
 }
 
-func AutoMigrate(db *gorm.DB) {
-	db.AutoMigrate(&Schedule{}, &DeviceSetting{}, &Device{}, &Settings{})
+func AutoMigrate(db *gorm.DB) error {
+	return db.AutoMigrate(&Schedule{}, &DeviceSetting{}, &Device{}, &Settings{})
 }

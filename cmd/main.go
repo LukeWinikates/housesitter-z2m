@@ -50,7 +50,9 @@ func createServer(noOpFlag bool, mqttHost, mqttClientID string) (server.Server, 
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect database (%s): %s", options.DataDir, err.Error())
 	}
-	database.AutoMigrate(db)
+	if err = database.AutoMigrate(db); err != nil {
+		return nil, err
+	}
 	s, err := server.New(db, client, *options)
 	return s, err
 }

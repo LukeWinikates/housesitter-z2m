@@ -4,7 +4,6 @@ import (
 	"LukeWinikates/january-twenty-five/lib/database"
 	"LukeWinikates/january-twenty-five/lib/dayofweek"
 	"LukeWinikates/january-twenty-five/lib/timeofday"
-	"fmt"
 	"testing"
 	"time"
 
