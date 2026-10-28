@@ -3,7 +3,6 @@ package api
 import (
 	"LukeWinikates/january-twenty-five/lib/database/queries"
 	"LukeWinikates/january-twenty-five/lib/timeofday"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -40,8 +39,6 @@ func (body SchedulePOSTRequestBody) ToScheduleCreateTemplate() (*queries.Schedul
 		return nil, err
 	}
 
-	fmt.Println(body.DaysOfWeek)
-
 	return &queries.ScheduleCreateTemplate{
 		Name:       body.Name,
 		OnTime:     onTime,
@@ -66,7 +63,6 @@ func mapDevices(devices []DeviceSettingPayload) []*queries.DeviceSettingCreate {
 // eg 22:15
 func htmlTimeToSecondsInDay(time string) (timeofday.SecondsInDay, error) {
 	parts := strings.Split(time, ":")
-	fmt.Println(parts)
 	hrs, err := strconv.Atoi(parts[0])
 	if err != nil {
 		return 0, err

@@ -17,11 +17,11 @@ func init() {
 }
 
 var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
-	fmt.Println("Connected")
+	log.Println("Connected")
 }
 
 var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
-	fmt.Printf("Connect lost: %v", err)
+	log.Printf("Connect lost: %v", err)
 }
 
 type Client interface {
@@ -38,9 +38,9 @@ func (c *RealClient) DeviceUpdates() (chan payloads.MessagePayload, chan error) 
 	payloadsChannel := make(chan payloads.MessagePayload)
 	errorsChannel := make(chan error)
 
-	fmt.Println("getting messages")
+	log.Println("getting messages")
 	token := c.mqttClient.Subscribe(topic, 1, func(client mqtt.Client, message mqtt.Message) {
-		fmt.Printf("Received message from topic: %s\n", message.Topic())
+		log.Printf("Received message from topic: %s\n", message.Topic())
 		deviceList, err := payloads.Parse(message.Payload())
 		if err != nil {
 			errorsChannel <- err
@@ -63,7 +63,7 @@ func (c *RealClient) SetDeviceState(deviceName string, message devices.LightCont
 	}
 
 	topic := fmt.Sprintf("zigbee2mqtt/%s/set", deviceName)
-	fmt.Printf("sending message for topic: %s\n", topic)
+	log.Printf("sending message for topic: %s\n", topic)
 	publish := c.mqttClient.Publish(topic, 0, false, payloadBytes)
 	if publish.Error() != nil {
 		return publish.Error()
@@ -74,7 +74,7 @@ func (c *RealClient) SetDeviceState(deviceName string, message devices.LightCont
 func NewClient(mqttHost, clientID string) Client {
 	options := mqtt.NewClientOptions()
 	options.AddBroker(mqttHost)
-	fmt.Printf("client id: %s\n", clientID)
+	log.Printf("client id: %s\n", clientID)
 	options.SetClientID(clientID)
 	client := mqtt.NewClient(options)
 

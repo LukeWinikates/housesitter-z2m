@@ -4,7 +4,7 @@ import (
 	"LukeWinikates/january-twenty-five/lib/database"
 	"LukeWinikates/january-twenty-five/lib/database/queries"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
-	"fmt"
+	"log"
 	"time"
 )
 
@@ -19,9 +19,9 @@ type runner struct {
 }
 
 func (r *runner) Start() {
-	fmt.Println("Starting Schedule Runner")
+	log.Println("Starting Schedule Runner")
 	if r.running {
-		fmt.Println("Runner was already running")
+		log.Println("Runner was already running")
 		return
 	}
 	r.running = true
@@ -32,22 +32,22 @@ func (r *runner) Start() {
 	go func() {
 		for r.running {
 			tick := <-r.ticker.C
-			fmt.Printf("ticking at: %s\n", tick.String())
+			log.Printf("ticking at: %s\n", tick.String())
 			r.scheduleEventsForNextInterval(tick.Add(r.interval))
 		}
 	}()
-	fmt.Println("Running")
+	log.Println("Running")
 }
 
 func (r *runner) Stop() {
-	fmt.Println("Stopping Schedule Runner")
+	log.Println("Stopping Schedule Runner")
 	if !r.running {
-		fmt.Println("Runner was already stopped")
+		log.Println("Runner was already stopped")
 		return
 	}
 	r.running = false
 	r.ticker.Stop()
-	fmt.Println("Stopped")
+	log.Println("Stopped")
 }
 func (r *runner) Running() bool {
 	return r.running
@@ -61,10 +61,10 @@ func (r *runner) scheduleEventsForNextInterval(end time.Time) {
 			<-timer.C
 			msg := t.Message
 
-			fmt.Printf("sending %v message for %s at %s\n", t.Kind, t.Device.FriendlyName, t.Time.Format(time.DateTime))
+			log.Printf("sending %v message for %s at %s\n", t.Kind, t.Device.FriendlyName, t.Time.Format(time.DateTime))
 			err := r.z2mClient.SetDeviceState(t.Device.IEEEAddress, msg)
 			if err != nil {
-				fmt.Println("err")
+				log.Println("err")
 			}
 		}()
 	}

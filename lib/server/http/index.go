@@ -4,7 +4,7 @@ import (
 	"LukeWinikates/january-twenty-five/lib/database"
 	"LukeWinikates/january-twenty-five/lib/runtime"
 	"LukeWinikates/january-twenty-five/lib/server/http/index"
-	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -17,7 +17,7 @@ func indexPage(store database.Store, deviceStore database.DeviceStore, runner ru
 		err := homepageTemplate.Execute(writer, viewModel)
 		if err != nil {
 			writer.WriteHeader(500)
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 			return
 		}
 	}

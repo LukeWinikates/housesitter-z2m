@@ -31,12 +31,12 @@ func main() {
 
 	go func() {
 		sig := <-sigs
-		fmt.Printf("received signal: %s\n", sig.String())
-		fmt.Println(s.Stop())
+		log.Printf("received signal: %s\n", sig.String())
+		log.Println(s.Stop())
 	}()
 
-	fmt.Println("starting server")
-	fmt.Println(s.Start())
+	log.Println("starting server")
+	log.Println(s.Start())
 
 }
 

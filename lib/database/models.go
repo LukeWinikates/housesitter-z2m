@@ -3,7 +3,7 @@ package database
 import (
 	"LukeWinikates/january-twenty-five/lib/dayofweek"
 	"LukeWinikates/january-twenty-five/lib/timeofday"
-	"fmt"
+	"log"
 	"time"
 
 	"gorm.io/gorm"
@@ -87,7 +87,7 @@ func (s *Schedule) nextActiveDay(afterTime time.Time) time.Time {
 			return afterTime.AddDate(0, 0, daysToAdd)
 		}
 	}
-	fmt.Println("empty or invalid days of week, treating schedule as daily")
+	log.Println("empty or invalid days of week, treating schedule as daily")
 	return afterTime.AddDate(0, 0, 1)
 }
 

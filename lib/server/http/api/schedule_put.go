@@ -4,20 +4,20 @@ import (
 	"LukeWinikates/january-twenty-five/lib/database"
 	"LukeWinikates/january-twenty-five/lib/database/queries"
 	"encoding/json"
-	"fmt"
-	"gorm.io/gorm"
+	"log"
 	"net/http"
+
+	"gorm.io/gorm"
 )
 
 func SchedulePUTHandler(scheduleStore database.Store, db *gorm.DB) func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		idFromPath := request.PathValue("schedule_id")
-		fmt.Println(idFromPath)
 		decoder := json.NewDecoder(request.Body)
 		var requestBody SchedulePUTRequestBody
 		err := decoder.Decode(&requestBody)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			writer.WriteHeader(500) // actually a malformed request error
 			return
 			// general error handler / logger

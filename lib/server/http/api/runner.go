@@ -3,7 +3,7 @@ package api
 import (
 	"LukeWinikates/january-twenty-five/lib/runtime"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -17,7 +17,7 @@ func RunnerStatePOSTHandler(runner runtime.Runner) func(writer http.ResponseWrit
 
 		err := json.NewDecoder(request.Body).Decode(&requestBody)
 		if err != nil {
-			fmt.Printf("err: %s\n", err.Error())
+			log.Printf("err: %s\n", err.Error())
 			writer.WriteHeader(500)
 
 		}

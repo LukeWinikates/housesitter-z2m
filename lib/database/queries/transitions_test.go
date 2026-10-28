@@ -34,7 +34,6 @@ func TestTransitionsInWindowQuery_Find(t *testing.T) {
 		IEEEAddress:  "ieeeeee",
 		ID:           "fakeDevice",
 	}
-	fmt.Println(dayofweek.Daily)
 	store := &fakeStore{
 		schedules: []*database.Schedule{
 			{
