@@ -1,6 +1,7 @@
 package homekit
 
 import (
+	"LukeWinikates/january-twenty-five/lib/runtime"
 	"context"
 	"log"
 	"os"
@@ -17,15 +18,15 @@ type Server interface {
 }
 
 type s struct {
-	hap    *hap.Server
-	cancel context.CancelFunc
+	hap         *hap.Server
+	cancel      context.CancelFunc
+	onOffSwitch *accessory.Switch
 }
 
 func (s s) Start() {
 	c := make(chan os.Signal, 2)
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, syscall.SIGTERM)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	s.cancel = cancel
 	go func() {
@@ -41,23 +42,38 @@ func (s s) Start() {
 }
 
 func (s s) Stop() {
+	s.onOffSwitch.Switch.On.SetValue(false)
 	s.cancel()
 }
 
-func NewServer() (Server, error) {
+func NewServer(runner runtime.Runner) (Server, error) {
 	fs := hap.NewFsStore("tmp/hapdb")
-	onOffSwitch := accessory.NewSwitch(accessory.Info{Name: "Rusuban Mode"})
+	onOffSwitch := accessory.NewSwitch(accessory.Info{Name: "Frokat Housesitter"})
+	onOffSwitch.Switch.On.SetValue(runner.Running())
+	go func(changes chan bool) {
+		for {
+			state := <-changes
+			onOffSwitch.Switch.On.SetValue(state)
+		}
+	}(runner.Changes())
 	onOffSwitch.Switch.On.OnValueRemoteUpdate(func(on bool) {
 		if on {
+			runner.Start()
 			log.Println("Switch is on")
 		} else {
+			runner.Stop()
 			log.Println("Switch is off")
 		}
 	})
 	server, err := hap.NewServer(fs, onOffSwitch.A)
+	//server.Addr = ":8999"
+	if err != nil {
+		return nil, err
+	}
 	server.Pin = "10010000"
 
 	return &s{
-		hap: server,
+		hap:         server,
+		onOffSwitch: onOffSwitch,
 	}, err
 }

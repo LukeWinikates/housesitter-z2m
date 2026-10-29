@@ -69,6 +69,7 @@ func createMQTTClient(noOpFlag bool, mqttHost, mqttClientID string) zigbee2mqtt.
 func createServerOptions() (*server.Options, error) {
 	dataPath := os.Getenv("DATA_PATH")
 	hostname := os.Getenv("HOUSESITTER_HOST")
+	enableHomekitSwitch := os.Getenv("HOUSESITTER_ENABLE_HOMEKIT") != ""
 	if hostname == "" {
 		hostname = "localhost:8998"
 	}
@@ -80,6 +81,7 @@ func createServerOptions() (*server.Options, error) {
 		DataDir:  dataPath,
 		Hostname: hostname,
 		Location: location,
+		Homekit:  enableHomekitSwitch,
 	}
 	return options, nil
 }

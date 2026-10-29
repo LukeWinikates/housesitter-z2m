@@ -5,3 +5,5 @@ entrypoint = "build/server"
 #include_dir=["lib"]
 include_dir = ["cmd", "lib", "public"]
 include_file = ["lib/server/http/index.gohtml", "lib/server/http/device.gohtml","lib/server/http/schedule.gohtml", ".air.toml"]
+send_interrupt = true
+kill_delay = "1s"

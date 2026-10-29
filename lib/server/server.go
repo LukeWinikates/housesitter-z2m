@@ -78,13 +78,12 @@ type Options struct {
 }
 
 func New(db *gorm.DB, client zigbee2mqtt.Client, opts Options) (Server, error) {
-	hapServer, err := homekit.NewServer()
+	store := database.NewDBStore(db)
+	runner := runtime.NewRunner(store, client, opts.Location)
+	hapServer, err := homekit.NewServer(runner)
 	if err != nil {
 		return nil, err
 	}
-	store := database.NewDBStore(db)
-
-	runner := runtime.NewRunner(store, client, opts.Location)
 	return &realServer{
 		database:   db,
 		ztmClient:  client,

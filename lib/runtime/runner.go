@@ -16,6 +16,11 @@ type runner struct {
 	location  *time.Location
 	running   bool
 	ticker    *time.Ticker
+	changes   chan bool
+}
+
+func (r *runner) Changes() chan bool {
+	return r.changes
 }
 
 func (r *runner) Start() {
@@ -25,6 +30,8 @@ func (r *runner) Start() {
 		return
 	}
 	r.running = true
+	r.changes <- true
+
 	r.lastRun = time.Now()
 	r.scheduleEventsForNextInterval(time.Now().Add(r.interval))
 
@@ -47,6 +54,7 @@ func (r *runner) Stop() {
 	}
 	r.running = false
 	r.ticker.Stop()
+	r.changes <- false
 	log.Println("Stopped")
 }
 func (r *runner) Running() bool {
@@ -75,6 +83,7 @@ type Runner interface {
 	Start()
 	Stop()
 	Running() bool
+	Changes() chan bool
 }
 
 func NewRunner(store database.Store, z2mClient zigbee2mqtt.Client, location *time.Location) Runner {
@@ -83,5 +92,6 @@ func NewRunner(store database.Store, z2mClient zigbee2mqtt.Client, location *tim
 		store:     store,
 		z2mClient: z2mClient,
 		location:  location,
+		changes:   make(chan bool),
 	}
 }
