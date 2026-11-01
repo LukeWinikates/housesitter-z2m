@@ -50,12 +50,14 @@ func (s s) Stop() {
 }
 
 type Options struct {
-	Addr string
-	Pin  string
+	Addr    string
+	Pin     string
+	DataDir string
+	On      bool
 }
 
 func NewServer(runner runtime.Runner, options Options) (Server, error) {
-	fs := hap.NewFsStore("tmp/hapdb")
+	fs := hap.NewFsStore(options.DataDir)
 	onOffSwitch := accessory.NewSwitch(accessory.Info{Name: "Frokat Housesitter"})
 	onOffSwitch.Switch.On.SetValue(runner.Running())
 	go func(changes chan bool) {

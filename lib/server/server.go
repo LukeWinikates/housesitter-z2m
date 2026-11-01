@@ -53,7 +53,7 @@ func (r *realServer) Start() error {
 		}
 	}()
 
-	if r.options.Homekit {
+	if r.options.Homekit.On {
 		log.Println("starting hap server")
 		r.hapServer.Start()
 	}
@@ -73,17 +73,14 @@ func (r *realServer) Stop() error {
 type Options struct {
 	DataDir  string
 	Hostname string
-	Homekit  bool
+	Homekit  homekit.Options
 	Location *time.Location
 }
 
 func New(db *gorm.DB, client zigbee2mqtt.Client, opts Options) (Server, error) {
 	store := database.NewDBStore(db)
 	runner := runtime.NewRunner(store, client, opts.Location)
-	hapServer, err := homekit.NewServer(runner, homekit.Options{
-		Addr: ":8999",
-		Pin:  "10010000",
-	})
+	hapServer, err := homekit.NewServer(runner, opts.Homekit)
 	if err != nil {
 		return nil, err
 	}

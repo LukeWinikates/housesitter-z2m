@@ -3,11 +3,13 @@ package main
 import (
 	"LukeWinikates/january-twenty-five/lib/database"
 	"LukeWinikates/january-twenty-five/lib/server"
+	"LukeWinikates/january-twenty-five/lib/server/homekit"
 	"LukeWinikates/january-twenty-five/lib/zigbee2mqtt"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -81,7 +83,12 @@ func createServerOptions() (*server.Options, error) {
 		DataDir:  dataPath,
 		Hostname: hostname,
 		Location: location,
-		Homekit:  enableHomekitSwitch,
+		Homekit: homekit.Options{
+			On:      enableHomekitSwitch,
+			Addr:    ":8999",
+			Pin:     "10010000",
+			DataDir: filepath.Join(dataPath, "hapdb"),
+		},
 	}
 	return options, nil
 }
