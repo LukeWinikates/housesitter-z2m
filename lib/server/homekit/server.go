@@ -10,6 +10,7 @@ import (
 
 	"github.com/brutella/hap"
 	"github.com/brutella/hap/accessory"
+	hapLogger "github.com/brutella/hap/log"
 )
 
 type Server interface {
@@ -27,6 +28,8 @@ func (s s) Start() {
 	c := make(chan os.Signal, 2)
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, syscall.SIGTERM)
+	hapLogger.Debug.Logger = log.New(os.Stdout, "DEBUG", hapLogger.Info.Flags())
+	//dsnsdLog.Debug.Logger = log.New(os.Stdout, "DEBUG", dsnsdLog.Debug.Flags())
 	ctx, cancel := context.WithCancel(context.Background())
 	s.cancel = cancel
 	go func() {
@@ -46,7 +49,12 @@ func (s s) Stop() {
 	s.cancel()
 }
 
-func NewServer(runner runtime.Runner) (Server, error) {
+type Options struct {
+	Addr string
+	Pin  string
+}
+
+func NewServer(runner runtime.Runner, options Options) (Server, error) {
 	fs := hap.NewFsStore("tmp/hapdb")
 	onOffSwitch := accessory.NewSwitch(accessory.Info{Name: "Frokat Housesitter"})
 	onOffSwitch.Switch.On.SetValue(runner.Running())
@@ -66,11 +74,11 @@ func NewServer(runner runtime.Runner) (Server, error) {
 		}
 	})
 	server, err := hap.NewServer(fs, onOffSwitch.A)
-	//server.Addr = ":8999"
 	if err != nil {
 		return nil, err
 	}
-	server.Pin = "10010000"
+	server.Addr = options.Addr
+	server.Pin = options.Pin
 
 	return &s{
 		hap:         server,

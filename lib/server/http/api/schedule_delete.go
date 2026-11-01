@@ -2,9 +2,10 @@ package api
 
 import (
 	"LukeWinikates/january-twenty-five/lib/database"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
+
+	"gorm.io/gorm"
 )
 
 func ScheduleDELETEHandler(scheduleStore database.Store, db *gorm.DB) func(writer http.ResponseWriter, request *http.Request) {
