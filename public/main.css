@@ -17,6 +17,13 @@ header h1 {
 
 button {
     cursor: pointer;
+    font-size: 14px;
+    color:black;
+}
+
+input, button, textarea, select {
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .card {
